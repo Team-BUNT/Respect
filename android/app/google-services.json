@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "152521918382",
+    "project_id": "respect-f905e",
+    "storage_bucket": "respect-f905e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:152521918382:android:9cdcb3117ad67a0dd3ea3f",
+        "android_client_info": {
+          "package_name": "com.jio.respect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "152521918382-q2rb4jl7lu0odcsmdh1t152bteshgqg6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAen8e-g8Qm6OQsZeOXYyoV9xTT5ry0UtU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "152521918382-q2rb4jl7lu0odcsmdh1t152bteshgqg6.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "152521918382-584v3icfg6a4c7jc1mikpv07ukbba6u4.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jio.RESPECT"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
