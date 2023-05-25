@@ -30,7 +30,7 @@ class _FilterMenuChipState extends State<FilterMenuChip> {
         borderRadius: BorderRadius.circular(100.0),
         side: const BorderSide(color: filterMenuChipBorderColor, width: 1),
       ),
-      backgroundColor: Colors.transparent,
+      backgroundColor: Colors.white,
     );
   }
 }

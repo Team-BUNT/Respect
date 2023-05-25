@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:respect/routes.dart';
+import 'package:respect/routing_constants.dart';
+import 'package:respect/screen/event_detail_screen.dart';
 import 'package:respect/screen/events_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -21,8 +23,21 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      title: 'Respect',
       initialRoute: EventScreen.routeName,
       routes: routes,
+      onGenerateRoute: (settings) {
+        if (settings.name == EventDetailScreen.routeName) {
+          final arguments = settings.arguments as DocumentSnapshot;
+
+          return MaterialPageRoute(builder: (context) {
+            return EventDetailScreen(
+              event : arguments
+            );
+          });
+        }
+        return null;
+      },
     );
   }
 }

@@ -85,7 +85,7 @@ class _RespectAppBarState extends State<RespectAppBar>
           );
         }).toList(),
       ),
-      elevation: 0.2,
+      elevation: 0.1,
       backgroundColor: Colors.white,
     );
   }

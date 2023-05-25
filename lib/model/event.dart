@@ -34,26 +34,31 @@ class Event {
   final String? hostContact;
   final bool? isShowing;
 
-  Event.fromJson(Map<String, Object?> json)
-      : this(
-          id: json['id']! as String,
-          posterURL: json['posterURL']! as String,
-          name: json['name']! as String,
-          province: json['province']! as String,
-          location: json['location']! as String,
-          date: json['date']! as Timestamp,
-          dueDate: json['dueDate']! as Timestamp?,
-          type: json['type']! as String,
-          genre: json['genre']! as List<String>,
-          account: json['account']! as String?,
-          link: json['link']! as String?,
-          detail: json['detail']! as String?,
-          hostName: json['hostName']! as String?,
-          hostContact: json['hostContact']! as String?,
-          isShowing: json['isShowing']! as bool?,
-        );
+  factory Event.fromFirestore(
+    DocumentSnapshot<Map<String, dynamic>> snapshot,
+    SnapshotOptions? options,
+  ) {
+    final data = snapshot.data();
+    return Event(
+      id: data?['id'],
+      posterURL: data?['posterURL'],
+      name: data?['name'],
+      province: data?['province'],
+      location: data?['location'],
+      date: data?['date'],
+      dueDate: data?['dueDate'],
+      type: data?['type'],
+      genre: data?['genre'],
+      account: data?['account'],
+      link: data?['link'],
+      detail: data?['detail'],
+      hostName: data?['hostName'],
+      hostContact: data?['hostContact'],
+      isShowing: data?['isShowing'],
+    );
+  }
 
-  Map<String, Object?> toJson() {
+  Map<String, dynamic> toFirestore() {
     return {
       'id': id,
       'posterURL': posterURL,

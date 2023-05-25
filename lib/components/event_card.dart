@@ -16,12 +16,31 @@ class EventCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        AspectRatio(
-          aspectRatio: 1.0 / 1.3,
-          child: Image.network(
-            event['posterURL'],
-            fit: BoxFit.cover,
-          ),
+        Stack(
+          children: [
+            AspectRatio(
+              aspectRatio: 1.0 / 1.3,
+              child: Image.network(
+                event['posterURL'],
+                fit: BoxFit.cover,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 12.0),
+                decoration: BoxDecoration(
+                  color: dDayChipColor,
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(6.0)
+                ),
+                child: Text(
+                  'D-2',
+                  style: dDayChipTextStyle,
+                ),
+              ),
+            )
+          ],
         ),
         Padding(
           padding: const EdgeInsets.symmetric(

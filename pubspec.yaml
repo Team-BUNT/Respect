@@ -40,6 +40,8 @@ dependencies:
   firebase_storage: ^11.2.1
   pull_down_button: ^0.9.1
   cloud_firestore: ^4.7.1
+  url_launcher: ^6.1.11
+  image_picker: ^0.8.7+5
 
 dev_dependencies:
   flutter_test:
