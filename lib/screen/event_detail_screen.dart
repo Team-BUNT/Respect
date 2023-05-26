@@ -176,7 +176,7 @@ class EventDetailScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        DateFormat('yyyy.MM.dd h시 까지').format(
+                        DateFormat('yyyy.MM.dd').format(
                           event['dueDate'].toDate(),
                         ),
                         style: const TextStyle(
