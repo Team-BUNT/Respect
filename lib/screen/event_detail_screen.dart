@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:respect/constants.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../model/event.dart';
 
 class EventDetailScreen extends StatelessWidget {
   const EventDetailScreen({
@@ -13,7 +13,7 @@ class EventDetailScreen extends StatelessWidget {
 
   static String routeName = "/event_detail_screen";
 
-  final DocumentSnapshot event;
+  final Event event;
 
   @override
   Widget build(BuildContext context) {
@@ -30,14 +30,14 @@ class EventDetailScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       body: ListView(
         children: [
-          Image.network(event['posterURL']),
+          Image.network(event.posterURL),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
               children: [
                 Chip(
                   label: Text(
-                    event['type'],
+                    event.type,
                     style: eventDetailTypeTextStyle,
                   ),
                   labelPadding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -52,10 +52,10 @@ class EventDetailScreen extends StatelessWidget {
                 ),
                 Wrap(
                   spacing: 8,
-                  children: List.generate(event['genre'].length, (index) {
+                  children: List.generate(event.genre.length, (index) {
                     return Chip(
                       label: Text(
-                        event['genre'][index],
+                        event.genre[index],
                         style: eventDetailGenreTextStyle,
                       ),
                       labelPadding:
@@ -90,15 +90,15 @@ class EventDetailScreen extends StatelessWidget {
               shrinkWrap: true,
               children: [
                 Text(
-                  event['name'],
+                  event.name,
                   style: eventDetailNameTextStyle,
                 ),
                 const SizedBox(
                   height: 15.0,
                 ),
                 Text(
-                  DateFormat('yyyy.MM.dd h시 aa').format(
-                    event['date'].toDate(),
+                  DateFormat('yyyy.MM.dd').format(
+                    event.date.toDate(),
                   ),
                   style: eventDetailDateTextStyle,
                 ),
@@ -147,7 +147,7 @@ class EventDetailScreen extends StatelessWidget {
                     ),
                     Flexible(
                       child: Text(
-                        event['location'],
+                        event.location,
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w400,
@@ -159,8 +159,7 @@ class EventDetailScreen extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 16.0),
-                if ((event.data() as Map<String, dynamic>)
-                    .containsKey('dueDate'))
+                if ((event.dueDate != null))
                   Row(
                     children: [
                       const SizedBox(
@@ -177,7 +176,7 @@ class EventDetailScreen extends StatelessWidget {
                       ),
                       Text(
                         DateFormat('yyyy.MM.dd').format(
-                          event['dueDate'].toDate(),
+                          (event.dueDate?.toDate() ?? DateTime.now()),
                         ),
                         style: const TextStyle(
                           fontSize: 15,
@@ -188,8 +187,7 @@ class EventDetailScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                if ((event.data() as Map<String, dynamic>)
-                    .containsKey('account'))
+                if ((event.account != null))
                   Row(
                     children: [
                       const SizedBox(
@@ -205,7 +203,7 @@ class EventDetailScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        event['account'],
+                        event.account ?? '??',
                         style: const TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w400,
@@ -219,7 +217,7 @@ class EventDetailScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16.0),
-          if ((event.data() as Map<String, dynamic>).containsKey('detail'))
+          if ((event.detail != null))
             Container(
               color: const Color(0xFFF4F4F4),
               child: Padding(
@@ -244,7 +242,7 @@ class EventDetailScreen extends StatelessWidget {
                       height: 10.0,
                     ),
                     Text(
-                      event['detail'],
+                      event.detail ?? '??',
                       style: const TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w400,
@@ -257,14 +255,14 @@ class EventDetailScreen extends StatelessWidget {
               ),
             ),
           const SizedBox(height: 36),
-          if ((event.data() as Map<String, dynamic>).containsKey('link'))
+          if ((event.link != null))
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: CupertinoButton(
                 color: Colors.black,
                 padding: const EdgeInsets.all(20.0),
                 onPressed: () async {
-                  final url = Uri.parse(event['link']);
+                  final url = Uri.parse(event.link ?? '');
 
                   if (await canLaunchUrl(url)) {
                     launchUrl(url);

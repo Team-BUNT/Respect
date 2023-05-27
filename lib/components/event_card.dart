@@ -1,7 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
 import 'package:intl/intl.dart';
+
+import '../model/event.dart';
 
 class EventCard extends StatelessWidget {
   const EventCard({
@@ -9,7 +10,7 @@ class EventCard extends StatelessWidget {
     required this.event,
   });
 
-  final DocumentSnapshot event;
+  final Event event;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +22,7 @@ class EventCard extends StatelessWidget {
             AspectRatio(
               aspectRatio: 1.0 / 1.3,
               child: Image.network(
-                event['posterURL'],
+                event.posterURL,
                 fit: BoxFit.cover,
               ),
             ),
@@ -35,6 +36,7 @@ class EventCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(6.0)
                 ),
                 child: Text(
+                  //TODO: D-day 계산
                   'D-2',
                   style: dDayChipTextStyle,
                 ),
@@ -52,7 +54,7 @@ class EventCard extends StatelessWidget {
             children: [
               Chip(
                 label: Text(
-                  event['type'],
+                  event.type,
                   style: eventTypeChipTextStyle,
                 ),
                 labelPadding:
@@ -65,10 +67,10 @@ class EventCard extends StatelessWidget {
               ),
               Wrap(
                 spacing: 8,
-                children: List.generate(event['genre'].length, (index) {
+                children: List.generate(event.genre.length, (index) {
                   return Chip(
                     label: Text(
-                      event['genre'][index],
+                      event.genre[index],
                       style: genreChipTextStyle,
                     ),
                     labelPadding: const EdgeInsets.symmetric(
@@ -87,7 +89,7 @@ class EventCard extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: Text(
-            event['name'],
+            event.name,
             style: curateEventTitleStyle,
             overflow: TextOverflow.ellipsis,
           ),
@@ -95,7 +97,7 @@ class EventCard extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
           child: Text(
-            DateFormat('yyyy.MM.dd').format(event['date'].toDate()),
+            DateFormat('yyyy.MM.dd').format(event.date.toDate()),
             style: curateEventDateTextStyle,
           ),
         ),

@@ -7,6 +7,7 @@ import 'package:respect/model/event_genre.dart';
 import 'package:respect/screen/event_detail_screen.dart';
 import '../components/filter_menu_chip.dart';
 import '../constants.dart';
+import '../model/event.dart';
 import '../model/province.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -26,12 +27,120 @@ class _EventScreenState extends State<EventScreen> {
   Province selectedProvince = Province.all;
   EventGenre selectedGenre = EventGenre.all;
 
-  Stream<QuerySnapshot> _eventsStream = FirebaseFirestore.instance
-      .collection('events')
-      .where('isShowing', isEqualTo: true)
-      .where('date', isGreaterThanOrEqualTo: DateTime.now())
-      .orderBy('date')
-      .snapshots();
+  List<Event> eventList = [];
+  List<Event> filteredEventList = [];
+
+  Future getEvents() async {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('events')
+        .where('isShowing', isEqualTo: true)
+        .where('date', isGreaterThanOrEqualTo: DateTime.now())
+        .orderBy('date')
+        .get();
+
+    for (var doc in snapshot.docs) {
+      var document = doc.data() as Map<String, dynamic>;
+      String id = document['id'];
+      String posterURL = document['posterURL'];
+      String name = document['name'];
+      String province = document['province'];
+      String location = document['location'];
+      Timestamp date = document['date'];
+      Timestamp? dueDate = document['dueDate'];
+      String type = document['type'];
+      List<String> genre = List<String>.from(document['genre']);
+      String? account = document['account'];
+      String? link = document['link'];
+      String? detail = document['detail'];
+      String? hostName = document['hostName'];
+      String? hostContact = document['hostContact'];
+      bool? isShowing = document['isShowing'];
+
+      Event event = Event(
+        id: id,
+        posterURL: posterURL,
+        name: name,
+        province: province,
+        location: location,
+        date: date,
+        dueDate: dueDate,
+        type: type,
+        genre: genre,
+        account: account,
+        link: link,
+        detail: detail,
+        hostName: hostName,
+        hostContact: hostContact,
+        isShowing: isShowing,
+      );
+      setState(() {
+        eventList.add(event);
+        filteredEventList = eventList;
+      });
+    }
+  }
+
+  void filterEvent() {
+    filteredEventList = eventList;
+
+    switch (currentEventTypeIndex) {
+      case 0:
+      case 1:
+        filteredEventList = filteredEventList
+            .where(
+              (event) => event.type.startsWith('배틀'),
+            )
+            .toList();
+      case 2:
+        filteredEventList = filteredEventList
+            .where(
+              (event) => event.type.startsWith('퍼포먼스'),
+            )
+            .toList();
+      case 3:
+        filteredEventList = filteredEventList
+            .where(
+              (event) => event.type.startsWith('경연'),
+            )
+            .toList();
+      case 4:
+        filteredEventList = filteredEventList
+            .where(
+              (event) => event.type.startsWith('파티'),
+            )
+            .toList();
+      case 5:
+        filteredEventList = filteredEventList
+            .where(
+              (event) => event.type.startsWith('기타'),
+            )
+            .toList();
+    }
+
+    if (selectedProvince != Province.all) {
+      filteredEventList = filteredEventList
+          .where(
+            (event) =>
+                event.province.startsWith(selectedProvince.convertToString),
+          )
+          .toList();
+    }
+
+    if (selectedGenre != EventGenre.all) {
+      filteredEventList = filteredEventList
+          .where(
+            (event) => event.genre.contains(selectedGenre.convertToString),
+          )
+          .toList();
+    }
+  }
+
+  @override
+  void initState() {
+    getEvents();
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,6 +151,7 @@ class _EventScreenState extends State<EventScreen> {
           onSelected: (typeIndex) {
             setState(() {
               currentEventTypeIndex = typeIndex;
+              filterEvent();
             });
           },
         ),
@@ -59,56 +169,7 @@ class _EventScreenState extends State<EventScreen> {
                         onTap: () {
                           setState(() {
                             selectedProvince = province;
-
-                            if (selectedGenre == EventGenre.all) {
-                              if (selectedProvince == Province.all) {
-                                _eventsStream = FirebaseFirestore.instance
-                                    .collection('events')
-                                    .where('isShowing', isEqualTo: true)
-                                    .where('date',
-                                        isGreaterThanOrEqualTo: DateTime.now())
-                                    .orderBy('date')
-                                    .snapshots();
-                              } else {
-                                _eventsStream = FirebaseFirestore.instance
-                                    .collection('events')
-                                    .where('isShowing', isEqualTo: true)
-                                    .where('date',
-                                        isGreaterThanOrEqualTo: DateTime.now())
-                                    .where('province',
-                                        isEqualTo:
-                                            selectedProvince.convertToString)
-                                    .orderBy('date')
-                                    .snapshots();
-                              }
-                            } else {
-                              if (selectedProvince == Province.all) {
-                                _eventsStream = FirebaseFirestore.instance
-                                    .collection('events')
-                                    .where('isShowing', isEqualTo: true)
-                                    .where('date',
-                                        isGreaterThanOrEqualTo: DateTime.now())
-                                    .where('genre',
-                                        arrayContains:
-                                            selectedGenre.convertToString)
-                                    .orderBy('date')
-                                    .snapshots();
-                              } else {
-                                _eventsStream = FirebaseFirestore.instance
-                                    .collection('events')
-                                    .where('isShowing', isEqualTo: true)
-                                    .where('date',
-                                        isGreaterThanOrEqualTo: DateTime.now())
-                                    .where('province',
-                                        isEqualTo:
-                                            selectedProvince.convertToString)
-                                    .where('genre',
-                                        arrayContains:
-                                            selectedGenre.convertToString)
-                                    .orderBy('date')
-                                    .snapshots();
-                              }
-                            }
+                            filterEvent();
                           });
                         },
                         title: province.convertToString,
@@ -118,7 +179,8 @@ class _EventScreenState extends State<EventScreen> {
                       onPressed: showMenu,
                       padding: EdgeInsets.zero,
                       child: FilterMenuChip(
-                          chipName: selectedProvince.convertToString),
+                        chipName: selectedProvince.convertToString,
+                      ),
                     ),
                   ),
                   const SizedBox(
@@ -130,56 +192,7 @@ class _EventScreenState extends State<EventScreen> {
                         onTap: () {
                           setState(() {
                             selectedGenre = genre;
-
-                            if (selectedProvince == Province.all) {
-                              if (selectedGenre == EventGenre.all) {
-                                _eventsStream = FirebaseFirestore.instance
-                                    .collection('events')
-                                    .where('isShowing', isEqualTo: true)
-                                    .where('date',
-                                        isGreaterThanOrEqualTo: DateTime.now())
-                                    .orderBy('date')
-                                    .snapshots();
-                              } else {
-                                _eventsStream = FirebaseFirestore.instance
-                                    .collection('events')
-                                    .where('isShowing', isEqualTo: true)
-                                    .where('date',
-                                        isGreaterThanOrEqualTo: DateTime.now())
-                                    .where('genre',
-                                        arrayContains:
-                                            selectedGenre.convertToString)
-                                    .orderBy('date')
-                                    .snapshots();
-                              }
-                            } else {
-                              if (selectedGenre == EventGenre.all) {
-                                _eventsStream = FirebaseFirestore.instance
-                                    .collection('events')
-                                    .where('isShowing', isEqualTo: true)
-                                    .where('date',
-                                        isGreaterThanOrEqualTo: DateTime.now())
-                                    .where('province',
-                                        isEqualTo:
-                                            selectedProvince.convertToString)
-                                    .orderBy('date')
-                                    .snapshots();
-                              } else {
-                                _eventsStream = FirebaseFirestore.instance
-                                    .collection('events')
-                                    .where('isShowing', isEqualTo: true)
-                                    .where('date',
-                                        isGreaterThanOrEqualTo: DateTime.now())
-                                    .where('province',
-                                        isEqualTo:
-                                            selectedProvince.convertToString)
-                                    .where('genre',
-                                        arrayContains:
-                                            selectedGenre.convertToString)
-                                    .orderBy('date')
-                                    .snapshots();
-                              }
-                            }
+                            filterEvent();
                           });
                         },
                         title: genre.convertToString,
@@ -189,7 +202,8 @@ class _EventScreenState extends State<EventScreen> {
                       onPressed: showMenu,
                       padding: EdgeInsets.zero,
                       child: FilterMenuChip(
-                          chipName: selectedGenre.convertToString),
+                        chipName: selectedGenre.convertToString,
+                      ),
                     ),
                   ),
                   const Spacer(),
@@ -205,48 +219,29 @@ class _EventScreenState extends State<EventScreen> {
                 ],
               ),
             ),
-            StreamBuilder<QuerySnapshot>(
-              stream: _eventsStream,
-              builder: (BuildContext context,
-                  AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.hasError) {
-                  return const Center(
-                    child: Text('뭔가가 잘못 됐다..!'),
+            if (eventList.isEmpty)
+              const Center(
+                child: Text('불러오는 중...'),
+              )
+            else
+              GridView.builder(
+                physics: const NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2, childAspectRatio: 39.0 / 74.0),
+                itemBuilder: ((context, index) {
+                  Event event = filteredEventList[index];
+                  return CupertinoButton(
+                    padding: const EdgeInsets.all(0.0),
+                    child: EventCard(event: event),
+                    onPressed: () {
+                      Navigator.pushNamed(context, EventDetailScreen.routeName,
+                          arguments: event);
+                    },
                   );
-                }
-
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(
-                    child: CircularProgressIndicator(
-                      color: Colors.black,
-                      strokeWidth: 2.0,
-                    ),
-                  );
-                }
-
-                return GridView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2, childAspectRatio: 39.0 / 74.0),
-                  itemBuilder: ((context, index) {
-                    final DocumentSnapshot documentSnapshot =
-                        snapshot.data!.docs[index];
-                    return CupertinoButton(
-                        padding: const EdgeInsets.all(0.0),
-                        child: EventCard(event: documentSnapshot),
-                        onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            EventDetailScreen.routeName,
-                            arguments: documentSnapshot
-                          );
-                        });
-                  }),
-                  itemCount: snapshot.data!.docs.length,
-                );
-              },
-            )
+                }),
+                itemCount: filteredEventList.length,
+              )
           ],
         ),
       ),
