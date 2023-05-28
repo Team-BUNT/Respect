@@ -31,53 +31,58 @@ class _EventScreenState extends State<EventScreen> {
   List<Event> filteredEventList = [];
 
   Future getEvents() async {
-    QuerySnapshot snapshot = await FirebaseFirestore.instance
+    await FirebaseFirestore.instance
         .collection('events')
         .where('isShowing', isEqualTo: true)
         .where('date', isGreaterThanOrEqualTo: DateTime.now())
         .orderBy('date')
-        .get();
+        .get()
+        .then(
+      (snapshot) {
+        for (var doc in snapshot.docs) {
+          var document = doc.data();
+          String id = document['id'];
+          String? thumbnail = document['thumbnail'];
+          String posterURL = document['posterURL'];
+          String name = document['name'];
+          String province = document['province'];
+          String location = document['location'];
+          DateTime date = (document['date'] as Timestamp).toDate();
+          DateTime? dueDate = (document['dueDate'] as Timestamp).toDate();
+          String type = document['type'];
+          List<String> genre = List<String>.from(document['genre']);
+          String? account = document['account'];
+          String? link = document['link'];
+          String? detail = document['detail'];
+          String? hostName = document['hostName'];
+          String? hostContact = document['hostContact'];
+          bool? isShowing = document['isShowing'];
 
-    for (var doc in snapshot.docs) {
-      var document = doc.data() as Map<String, dynamic>;
-      String id = document['id'];
-      String posterURL = document['posterURL'];
-      String name = document['name'];
-      String province = document['province'];
-      String location = document['location'];
-      DateTime date = (document['date'] as Timestamp).toDate();
-      DateTime? dueDate = (document['dueDate'] as Timestamp).toDate();
-      String type = document['type'];
-      List<String> genre = List<String>.from(document['genre']);
-      String? account = document['account'];
-      String? link = document['link'];
-      String? detail = document['detail'];
-      String? hostName = document['hostName'];
-      String? hostContact = document['hostContact'];
-      bool? isShowing = document['isShowing'];
-
-      Event event = Event(
-        id: id,
-        posterURL: posterURL,
-        name: name,
-        province: province,
-        location: location,
-        date: date,
-        dueDate: dueDate,
-        type: type,
-        genre: genre,
-        account: account,
-        link: link,
-        detail: detail,
-        hostName: hostName,
-        hostContact: hostContact,
-        isShowing: isShowing,
-      );
-      eventList.add(event);
-      setState(() {
-        filteredEventList = eventList;
-      });
-    }
+          Event event = Event(
+            id: id,
+            thumbnail: thumbnail,
+            posterURL: posterURL,
+            name: name,
+            province: province,
+            location: location,
+            date: date,
+            dueDate: dueDate,
+            type: type,
+            genre: genre,
+            account: account,
+            link: link,
+            detail: detail,
+            hostName: hostName,
+            hostContact: hostContact,
+            isShowing: isShowing,
+          );
+          eventList.add(event);
+          setState(() {
+            filteredEventList = eventList;
+          });
+        }
+      },
+    );
   }
 
   void filterEvent() {

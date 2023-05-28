@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:image/image.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:pull_down_button/pull_down_button.dart';
@@ -11,6 +12,7 @@ import '../model/event.dart';
 import '../model/event_genre.dart';
 import '../model/event_type.dart';
 import '../model/province.dart';
+import '../utils/amazon_s3_util.dart';
 import '../utils/dialog.dart';
 import 'package:uuid/uuid.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -104,6 +106,33 @@ class _AddEventScreenState extends State<AddEventScreen> {
     );
   }
 
+  void _showAlert(BuildContext context) {
+    showCupertinoDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: const Text('행사 등록'),
+          content: const Column(
+            children: [
+              Text('관리자의 승인 후'),
+              Text('업로드될 예정입니다'),
+            ],
+          ),
+          actions: [
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              child: const Text("확인"),
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.pop(context);
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+
   void _getPhotoLibraryImage() async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -161,6 +190,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AmazonS3Util amazonS3Util = AmazonS3Util();
+
     return GestureDetector(
       onTap: () {
         FocusManager.instance.primaryFocus?.unfocus();
@@ -195,6 +226,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                             fontFamily: 'Pretendard',
                           ),
                         ),
+                        SizedBox(width: 4.0),
                         Text(
                           '(1:1.3 비율 권장)',
                           style: TextStyle(
@@ -204,6 +236,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                             fontFamily: 'Pretendard',
                           ),
                         ),
+                        SizedBox(width: 4.0),
                         Text(
                           '*',
                           style: TextStyle(
@@ -228,7 +261,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                 height: 192,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(6.0),
-                                  color: const Color(0xFFF4F4F4),
+                                  color: Color(0xFFF4F4F4),
                                 ),
                                 child: const Icon(
                                   CupertinoIcons.plus,
@@ -241,7 +274,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                 height: 192,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(6.0),
-                                  color: const Color(0xFFF4F4F4),
+                                  color: Color(0xFFF4F4F4),
                                   image: DecorationImage(
                                       image: FileImage(File(posterImage!.path)),
                                       fit: BoxFit.cover),
@@ -268,6 +301,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                             fontFamily: 'Pretendard',
                           ),
                         ),
+                        SizedBox(width: 4.0),
                         Text(
                           '*',
                           style: TextStyle(
@@ -363,6 +397,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                             fontFamily: 'Pretendard',
                           ),
                         ),
+                        SizedBox(width: 4.0),
                         Text(
                           '*',
                           style: TextStyle(
@@ -439,6 +474,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                             fontFamily: 'Pretendard',
                           ),
                         ),
+                        SizedBox(width: 4.0),
                         Text(
                           '*',
                           style: TextStyle(
@@ -533,6 +569,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                             fontFamily: 'Pretendard',
                           ),
                         ),
+                        SizedBox(width: 4.0),
                         Text(
                           '*',
                           style: TextStyle(
@@ -758,6 +795,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                             fontFamily: 'Pretendard',
                           ),
                         ),
+                        SizedBox(width: 4.0),
                         Text(
                           '*',
                           style: TextStyle(
@@ -834,12 +872,23 @@ class _AddEventScreenState extends State<AddEventScreen> {
                             fontFamily: 'Pretendard',
                           ),
                         ),
+                        SizedBox(width: 4.0),
                         Text(
                           '*',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w400,
                             color: Color(0xFFF64747),
+                            fontFamily: 'Pretendard',
+                          ),
+                        ),
+                        SizedBox(width: 4.0),
+                        Text(
+                          '중복 가능',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF636366),
                             fontFamily: 'Pretendard',
                           ),
                         ),
@@ -1122,6 +1171,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                             fontFamily: 'Pretendard',
                           ),
                         ),
+                        SizedBox(width: 4.0),
                         Text(
                           '*',
                           style: TextStyle(
@@ -1216,6 +1266,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                             fontFamily: 'Pretendard',
                           ),
                         ),
+                        SizedBox(width: 4.0),
                         Text(
                           '*',
                           style: TextStyle(
@@ -1300,71 +1351,95 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     ),
                     const SizedBox(height: 32.0),
                     CupertinoButton(
-                        color: Colors.black,
-                        padding: const EdgeInsets.all(20.0),
-                        onPressed: () async {
-                          if (_formKey.currentState!.validate()) {
-                            const snackBar = SnackBar(
-                              content: Text('필수 항목을 모두 입력해 주세요'),
-                              backgroundColor: Colors.black,
-                              behavior: SnackBarBehavior.floating,
-                              duration: Duration(seconds: 2),
-                            );
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(snackBar);
-                            }
-                          } else {
-                            final eventsRef = FirebaseFirestore.instance
-                                .collection('events')
-                                .withConverter<Event>(
-                                  fromFirestore: (snapshot, _) =>
-                                      Event.fromFirestore(snapshot.data()!),
-                                  toFirestore: (event, _) =>
-                                      event.toFirestore(),
-                                );
-                            final id = uuid.v1();
+                      color: Colors.black,
+                      padding: const EdgeInsets.all(20.0),
+                      onPressed: () async {
+                        _formKey.currentState!.validate();
 
-                            await eventsRef.add(
-                              Event(
-                                id: id,
-                                posterURL: '??',
-                                name: name ?? '??',
-                                province: province.convertToString,
-                                location: location ?? '??',
-                                date: date.first ?? DateTime.now(),
-                                type: eventType.convertToString,
-                                genre: genre,
-                                account: account,
-                                formLink: formLink,
-                                detail: detail,
-                                hostName: hostName,
-                                hostContact: hostContact,
-                                isShowing: false,
-                              ),
-                            );
+                        if (_nameFieldError ||
+                            _locationFieldError ||
+                            _hostNameFieldError ||
+                            _hostContactFieldError ||
+                            posterImage == null) {
+                          const snackBar = SnackBar(
+                            content: Text('필수 항목을 모두 입력해 주세요'),
+                            backgroundColor: Colors.black,
+                            behavior: SnackBarBehavior.floating,
+                            duration: Duration(seconds: 2),
+                          );
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(snackBar);
                           }
+                        } else {
+                          final eventsRef = FirebaseFirestore.instance
+                              .collection('events')
+                              .withConverter<Event>(
+                                fromFirestore: (snapshot, _) =>
+                                    Event.fromFirestore(snapshot.data()!),
+                                toFirestore: (event, _) => event.toFirestore(),
+                              );
 
-                          var errorFields = await _checkFieldCondition();
-                          if (errorFields.isNotEmpty) {
-                            errorFields.first.requestFocus();
-                          }
-                        },
-                        child: const Row(
-                          children: [
-                            Spacer(),
-                            Text(
-                              '등록하기',
-                              style: TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFFFFFFFF),
-                                fontFamily: 'Pretendard',
-                              ),
+                          final id = uuid.v1();
+                          final originImage = decodeImage(
+                              File(posterImage?.path ?? '').readAsBytesSync());
+                          final thumbImage =
+                              copyResize(originImage!, width: 600);
+                          final resizedImage =
+                              copyResize(originImage, width: 1170);
+
+                          final thumbnail = await amazonS3Util.uploadImage(
+                              image: File('$name/thumbnail.png')
+                                ..writeAsBytesSync(encodePng(thumbImage)),
+                              name: name ?? '');
+                          final posterURL = await amazonS3Util.uploadImage(
+                              image: File('$name/poster.png')
+                                ..writeAsBytesSync(encodePng(resizedImage)),
+                              name: name ?? '');
+
+                          await eventsRef.add(
+                            Event(
+                              id: id,
+                              thumbnail: thumbnail,
+                              posterURL: posterURL,
+                              name: name ?? '??',
+                              province: province.convertToString,
+                              location: location ?? '??',
+                              date: date.first ?? DateTime.now(),
+                              type: eventType.convertToString,
+                              genre: genre,
+                              account: account,
+                              formLink: formLink,
+                              detail: detail,
+                              hostName: hostName,
+                              hostContact: hostContact,
+                              isShowing: false,
                             ),
-                            Spacer(),
-                          ],
-                        )),
+                          );
+                          if (context.mounted) _showAlert(context);
+                        }
+
+                        var errorFields = await _checkFieldCondition();
+                        if (errorFields.isNotEmpty) {
+                          errorFields.first.requestFocus();
+                        }
+                      },
+                      child: const Row(
+                        children: [
+                          Spacer(),
+                          Text(
+                            '등록하기',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFFFFFFFF),
+                              fontFamily: 'Pretendard',
+                            ),
+                          ),
+                          Spacer(),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               )

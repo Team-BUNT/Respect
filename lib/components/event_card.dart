@@ -21,7 +21,7 @@ class EventCard extends StatelessWidget {
             AspectRatio(
               aspectRatio: 1.0 / 1.3,
               child: Image.network(
-                event.posterURL,
+                event.thumbnail ?? event.posterURL,
                 fit: BoxFit.cover,
               ),
             ),
@@ -35,7 +35,6 @@ class EventCard extends StatelessWidget {
                     shape: BoxShape.rectangle,
                     borderRadius: BorderRadius.circular(6.0)),
                 child: Text(
-                  //TODO: D-day 계산
                   'D-${int.parse(event.date.difference(DateTime.now()).inDays.toString())}',
                   style: dDayChipTextStyle,
                 ),

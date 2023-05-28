@@ -1,6 +1,7 @@
 class Event {
   Event(
       {required this.id,
+      this.thumbnail,
       required this.posterURL,
       required this.name,
       required this.province,
@@ -18,6 +19,7 @@ class Event {
       this.isShowing});
 
   final String id;
+  final String? thumbnail;
   final String posterURL;
   final String name;
   final String province;
@@ -37,6 +39,7 @@ class Event {
   Event.fromFirestore(Map<String, Object?> json)
       : this(
           id: json['id'] as String,
+          thumbnail: json['thumbnail'] as String,
           posterURL: json['posterURL'] as String,
           name: json['name'] as String,
           province: json['province'] as String,
@@ -57,6 +60,7 @@ class Event {
   Map<String, Object?> toFirestore() {
     return {
       'id': id,
+      'thumbnail': thumbnail,
       'posterURL': posterURL,
       'name': name,
       'province': province,
