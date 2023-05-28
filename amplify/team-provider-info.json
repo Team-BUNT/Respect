@@ -1,0 +1,23 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-respect-dev-31058-authRole",
+      "UnauthRoleArn": "arn:aws:iam::174271302160:role/amplify-respect-dev-31058-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::174271302160:role/amplify-respect-dev-31058-authRole",
+      "Region": "ap-northeast-2",
+      "DeploymentBucketName": "amplify-respect-dev-31058-deployment",
+      "UnauthRoleName": "amplify-respect-dev-31058-unauthRole",
+      "StackName": "amplify-respect-dev-31058",
+      "StackId": "arn:aws:cloudformation:ap-northeast-2:174271302160:stack/amplify-respect-dev-31058/ff7580e0-fd82-11ed-b199-0ad620b17172",
+      "AmplifyAppId": "d297bzg4tfy7su"
+    },
+    "categories": {
+      "auth": {
+        "respectcf4ecd3a": {}
+      },
+      "storage": {
+        "s3f09c6f52": {}
+      }
+    }
+  }
+}
