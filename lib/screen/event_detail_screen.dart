@@ -30,7 +30,29 @@ class EventDetailScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       body: ListView(
         children: [
-          Image.network(event.posterURL),
+          Stack(children: [
+            Image.network(event.posterURL),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 12.0),
+                decoration: BoxDecoration(
+                    color: dDayChipColor,
+                    shape: BoxShape.rectangle,
+                    borderRadius: BorderRadius.circular(6.0)),
+                child: Text(
+                  'D-${int.parse(event.date.difference(DateTime.now()).inDays.toString())}',
+                  style: const TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.white,
+                    fontFamily: 'Pretendard',
+                  ),
+                ),
+              ),
+            )
+          ]),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Row(
@@ -98,7 +120,7 @@ class EventDetailScreen extends StatelessWidget {
                 ),
                 Text(
                   DateFormat('yyyy.MM.dd').format(
-                    event.date.toDate(),
+                    event.date,
                   ),
                   style: eventDetailDateTextStyle,
                 ),
@@ -159,7 +181,7 @@ class EventDetailScreen extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 16.0),
-                if ((event.dueDate != null))
+                if (event.dueDate != null)
                   Row(
                     children: [
                       const SizedBox(
@@ -176,7 +198,7 @@ class EventDetailScreen extends StatelessWidget {
                       ),
                       Text(
                         DateFormat('yyyy.MM.dd').format(
-                          (event.dueDate?.toDate() ?? DateTime.now()),
+                          (event.dueDate ?? DateTime.now()),
                         ),
                         style: const TextStyle(
                           fontSize: 15,
@@ -187,7 +209,7 @@ class EventDetailScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                if ((event.account != null))
+                if (event.account != null)
                   Row(
                     children: [
                       const SizedBox(
@@ -217,7 +239,7 @@ class EventDetailScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16.0),
-          if ((event.detail != null))
+          if (event.detail != null)
             Container(
               color: const Color(0xFFF4F4F4),
               child: Padding(
@@ -255,14 +277,14 @@ class EventDetailScreen extends StatelessWidget {
               ),
             ),
           const SizedBox(height: 36),
-          if ((event.link != null))
+          if (event.link != null || event.formLink != null)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: CupertinoButton(
                 color: Colors.black,
                 padding: const EdgeInsets.all(20.0),
                 onPressed: () async {
-                  final url = Uri.parse(event.link ?? '');
+                  final url = Uri.parse(event.formLink ?? event.link!);
 
                   if (await canLaunchUrl(url)) {
                     launchUrl(url);

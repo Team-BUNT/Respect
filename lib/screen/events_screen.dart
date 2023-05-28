@@ -45,8 +45,8 @@ class _EventScreenState extends State<EventScreen> {
       String name = document['name'];
       String province = document['province'];
       String location = document['location'];
-      Timestamp date = document['date'];
-      Timestamp? dueDate = document['dueDate'];
+      DateTime date = (document['date'] as Timestamp).toDate();
+      DateTime? dueDate = (document['dueDate'] as Timestamp).toDate();
       String type = document['type'];
       List<String> genre = List<String>.from(document['genre']);
       String? account = document['account'];
@@ -73,8 +73,8 @@ class _EventScreenState extends State<EventScreen> {
         hostContact: hostContact,
         isShowing: isShowing,
       );
+      eventList.add(event);
       setState(() {
-        eventList.add(event);
         filteredEventList = eventList;
       });
     }
@@ -84,7 +84,6 @@ class _EventScreenState extends State<EventScreen> {
     filteredEventList = eventList;
 
     switch (currentEventTypeIndex) {
-      case 0:
       case 1:
         filteredEventList = filteredEventList
             .where(
@@ -156,93 +155,105 @@ class _EventScreenState extends State<EventScreen> {
           },
         ),
         backgroundColor: Colors.white,
-        body: ListView(
-          children: [
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-              child: Row(
-                children: [
-                  PullDownButton(
-                    itemBuilder: (context) => Province.values.map((province) {
-                      return PullDownMenuItem.selectable(
-                        onTap: () {
-                          setState(() {
-                            selectedProvince = province;
-                            filterEvent();
-                          });
-                        },
-                        title: province.convertToString,
-                      );
-                    }).toList(),
-                    buttonBuilder: (context, showMenu) => CupertinoButton(
-                      onPressed: showMenu,
-                      padding: EdgeInsets.zero,
-                      child: FilterMenuChip(
-                        chipName: selectedProvince.convertToString,
+        body: RefreshIndicator(
+          color: Colors.black,
+          displacement: 10.0,
+          strokeWidth: 2.0,
+          onRefresh: () async {
+            eventList.clear();
+            await getEvents();
+            filterEvent();
+            setState(() {});
+          },
+          child: ListView(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 12.0),
+                child: Row(
+                  children: [
+                    PullDownButton(
+                      itemBuilder: (context) => Province.values.map((province) {
+                        return PullDownMenuItem.selectable(
+                          onTap: () {
+                            setState(() {
+                              selectedProvince = province;
+                              filterEvent();
+                            });
+                          },
+                          title: province.convertToString,
+                        );
+                      }).toList(),
+                      buttonBuilder: (context, showMenu) => CupertinoButton(
+                        onPressed: showMenu,
+                        padding: EdgeInsets.zero,
+                        child: FilterMenuChip(
+                          chipName: selectedProvince.convertToString,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    width: 12.0,
-                  ),
-                  PullDownButton(
-                    itemBuilder: (context) => EventGenre.values.map((genre) {
-                      return PullDownMenuItem.selectable(
-                        onTap: () {
-                          setState(() {
-                            selectedGenre = genre;
-                            filterEvent();
-                          });
-                        },
-                        title: genre.convertToString,
-                      );
-                    }).toList(),
-                    buttonBuilder: (context, showMenu) => CupertinoButton(
-                      onPressed: showMenu,
-                      padding: EdgeInsets.zero,
-                      child: FilterMenuChip(
-                        chipName: selectedGenre.convertToString,
+                    const SizedBox(
+                      width: 12.0,
+                    ),
+                    PullDownButton(
+                      itemBuilder: (context) => EventGenre.values.map((genre) {
+                        return PullDownMenuItem.selectable(
+                          onTap: () {
+                            setState(() {
+                              selectedGenre = genre;
+                              filterEvent();
+                            });
+                          },
+                          title: genre.convertToString,
+                        );
+                      }).toList(),
+                      buttonBuilder: (context, showMenu) => CupertinoButton(
+                        onPressed: showMenu,
+                        padding: EdgeInsets.zero,
+                        child: FilterMenuChip(
+                          chipName: selectedGenre.convertToString,
+                        ),
                       ),
                     ),
-                  ),
-                  const Spacer(),
-                  const Text(
-                    'D-day 순',
-                    style: TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.w400,
-                      color: dDayTextColor,
-                      fontFamily: 'Pretendard',
-                    ),
-                  )
-                ],
+                    const Spacer(),
+                    const Text(
+                      'D-day 순',
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.w400,
+                        color: dDayTextColor,
+                        fontFamily: 'Pretendard',
+                      ),
+                    )
+                  ],
+                ),
               ),
-            ),
-            if (eventList.isEmpty)
-              const Center(
-                child: Text('불러오는 중...'),
-              )
-            else
-              GridView.builder(
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, childAspectRatio: 39.0 / 74.0),
-                itemBuilder: ((context, index) {
-                  Event event = filteredEventList[index];
-                  return CupertinoButton(
-                    padding: const EdgeInsets.all(0.0),
-                    child: EventCard(event: event),
-                    onPressed: () {
-                      Navigator.pushNamed(context, EventDetailScreen.routeName,
-                          arguments: event);
-                    },
-                  );
-                }),
-                itemCount: filteredEventList.length,
-              )
-          ],
+              if (eventList.isEmpty)
+                const Center(
+                  child: Text('불러오는 중...'),
+                )
+              else
+                GridView.builder(
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2, childAspectRatio: 39.0 / 74.0),
+                  itemBuilder: ((context, index) {
+                    Event event = filteredEventList[index];
+                    return CupertinoButton(
+                      padding: const EdgeInsets.all(0.0),
+                      child: EventCard(event: event),
+                      onPressed: () {
+                        Navigator.pushNamed(
+                            context, EventDetailScreen.routeName,
+                            arguments: event);
+                      },
+                    );
+                  }),
+                  itemCount: filteredEventList.length,
+                )
+            ],
+          ),
         ),
       ),
     );

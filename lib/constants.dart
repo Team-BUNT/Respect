@@ -11,7 +11,7 @@ const curateDateTextColor = Color(0xFF48484A);
 const filterMenuChipBorderColor = Color(0xFFE5E5EA);
 const filterMenuChipTextColor = Color(0xFF636366);
 const dDayTextColor = Color(0xFF9D9D9D);
-const dDayChipColor = Color(0x59000000);
+const dDayChipColor = Color(0x99000000);
 
 // Text Styles
 var navTextStyle = const TextStyle(

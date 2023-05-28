@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../constants.dart';
 import 'package:intl/intl.dart';
-
 import '../model/event.dart';
 
 class EventCard extends StatelessWidget {
@@ -29,15 +28,15 @@ class EventCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(10.0),
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 12.0),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 5.0, horizontal: 12.0),
                 decoration: BoxDecoration(
-                  color: dDayChipColor,
-                  shape: BoxShape.rectangle,
-                  borderRadius: BorderRadius.circular(6.0)
-                ),
+                    color: dDayChipColor,
+                    shape: BoxShape.rectangle,
+                    borderRadius: BorderRadius.circular(6.0)),
                 child: Text(
                   //TODO: D-day 계산
-                  'D-2',
+                  'D-${int.parse(event.date.difference(DateTime.now()).inDays.toString())}',
                   style: dDayChipTextStyle,
                 ),
               ),
@@ -97,7 +96,7 @@ class EventCard extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
           child: Text(
-            DateFormat('yyyy.MM.dd').format(event.date.toDate()),
+            DateFormat('yyyy.MM.dd').format(event.date),
             style: curateEventDateTextStyle,
           ),
         ),
