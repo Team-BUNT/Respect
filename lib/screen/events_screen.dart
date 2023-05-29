@@ -48,7 +48,7 @@ class _EventScreenState extends State<EventScreen> {
           String province = document['province'];
           String location = document['location'];
           DateTime date = (document['date'] as Timestamp).toDate();
-          DateTime? dueDate = (document['dueDate'] as Timestamp).toDate();
+          DateTime? dueDate = ((document['dueDate'] == null) ? null : (document['dueDate'] as Timestamp).toDate());
           String type = document['type'];
           List<String> genre = List<String>.from(document['genre']);
           String? account = document['account'];

@@ -2,9 +2,10 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:image/image.dart';
+import 'package:image/image.dart' as image;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import '../constants.dart';
 import '../model/calendar_date_picker2_config.dart';
@@ -68,6 +69,14 @@ class _AddEventScreenState extends State<AddEventScreen> {
   // ignore: unused_field
   bool _hostContactFieldError = false;
   String? _hostContactErrorText;
+
+  AmazonS3Util amazonS3Util = AmazonS3Util();
+  final eventsRef = FirebaseFirestore.instance
+      .collection('events')
+      .withConverter<Event>(
+        fromFirestore: (snapshot, _) => Event.fromFirestore(snapshot.data()!),
+        toFirestore: (event, _) => event.toFirestore(),
+      );
 
   Future<String?> getDeviceId() async {
     var deviceInfo = DeviceInfoPlugin();
@@ -143,6 +152,46 @@ class _AddEventScreenState extends State<AddEventScreen> {
     }
   }
 
+  Future<void> _uploadEvent() async {
+    final id = uuid.v1();
+    final originImage =
+        image.decodeImage(File(posterImage?.path ?? '').readAsBytesSync());
+    final thumbImage = image.copyResize(originImage!, width: 540);
+    final resizedImage = image.copyResize(originImage, width: 1080);
+    final tempDir = await getTemporaryDirectory();
+    String tempPath = tempDir.path;
+
+    final thumbnail = await amazonS3Util.uploadImage(
+        image: File('$tempPath/thumbnail.jpg')
+          ..writeAsBytesSync(image.encodePng(thumbImage),),
+        name: '$name/thumbnail.jpg');
+    final posterURL = await amazonS3Util.uploadImage(
+        image: File('$tempPath/poster.jpg')
+          ..writeAsBytesSync(image.encodePng(resizedImage),),
+        name: '$name/poster.jpg');
+
+    await eventsRef.add(
+      Event(
+        id: id,
+        thumbnail: thumbnail,
+        posterURL: posterURL,
+        name: name ?? '??',
+        province: province.convertToString,
+        location: location ?? '??',
+        date: date.first ?? DateTime.now(),
+        dueDate: dueDate?.first ?? DateTime.now(),
+        type: eventType.convertToString,
+        genre: genre,
+        account: account,
+        formLink: formLink,
+        detail: detail,
+        hostName: hostName,
+        hostContact: hostContact,
+        isShowing: false,
+      ),
+    );
+  }
+
   Future<List<FocusNode>> _checkFieldCondition() async {
     List<FocusNode> errorFields = [];
 
@@ -190,8 +239,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AmazonS3Util amazonS3Util = AmazonS3Util();
-
     return GestureDetector(
       onTap: () {
         FocusManager.instance.primaryFocus?.unfocus();
@@ -248,9 +295,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 10.0,
-                    ),
+                    const SizedBox(height: 10.0),
                     SizedBox(
                       child: CupertinoButton(
                         child: Column(
@@ -261,7 +306,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                 height: 192,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(6.0),
-                                  color: Color(0xFFF4F4F4),
+                                  color: const Color(0xFFF4F4F4),
                                 ),
                                 child: const Icon(
                                   CupertinoIcons.plus,
@@ -274,7 +319,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                                 height: 192,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(6.0),
-                                  color: Color(0xFFF4F4F4),
+                                  color: const Color(0xFFF4F4F4),
                                   image: DecorationImage(
                                       image: FileImage(File(posterImage!.path)),
                                       fit: BoxFit.cover),
@@ -287,9 +332,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                         },
                       ),
                     ),
-                    const SizedBox(
-                      height: 24.0,
-                    ),
+                    const SizedBox(height: 24.0),
                     const Row(
                       children: [
                         Text(
@@ -1371,57 +1414,15 @@ class _AddEventScreenState extends State<AddEventScreen> {
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(snackBar);
                           }
+
+                          var errorFields = await _checkFieldCondition();
+                          if (errorFields.isNotEmpty) {
+                            errorFields.first.requestFocus();
+                          }
                         } else {
-                          final eventsRef = FirebaseFirestore.instance
-                              .collection('events')
-                              .withConverter<Event>(
-                                fromFirestore: (snapshot, _) =>
-                                    Event.fromFirestore(snapshot.data()!),
-                                toFirestore: (event, _) => event.toFirestore(),
-                              );
-
-                          final id = uuid.v1();
-                          final originImage = decodeImage(
-                              File(posterImage?.path ?? '').readAsBytesSync());
-                          final thumbImage =
-                              copyResize(originImage!, width: 600);
-                          final resizedImage =
-                              copyResize(originImage, width: 1170);
-
-                          final thumbnail = await amazonS3Util.uploadImage(
-                              image: File('$name/thumbnail.png')
-                                ..writeAsBytesSync(encodePng(thumbImage)),
-                              name: name ?? '');
-                          final posterURL = await amazonS3Util.uploadImage(
-                              image: File('$name/poster.png')
-                                ..writeAsBytesSync(encodePng(resizedImage)),
-                              name: name ?? '');
-
-                          await eventsRef.add(
-                            Event(
-                              id: id,
-                              thumbnail: thumbnail,
-                              posterURL: posterURL,
-                              name: name ?? '??',
-                              province: province.convertToString,
-                              location: location ?? '??',
-                              date: date.first ?? DateTime.now(),
-                              type: eventType.convertToString,
-                              genre: genre,
-                              account: account,
-                              formLink: formLink,
-                              detail: detail,
-                              hostName: hostName,
-                              hostContact: hostContact,
-                              isShowing: false,
-                            ),
-                          );
                           if (context.mounted) _showAlert(context);
-                        }
 
-                        var errorFields = await _checkFieldCondition();
-                        if (errorFields.isNotEmpty) {
-                          errorFields.first.requestFocus();
+                          _uploadEvent();
                         }
                       },
                       child: const Row(

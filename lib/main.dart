@@ -33,6 +33,7 @@ Future<void> _configureAmplify() async {
     final storage = AmplifyStorageS3();
     await Amplify.addPlugins([auth, storage]);
 
+    // call Amplify.configure to use the initialized categories in your app
     await Amplify.configure(amplifyconfig);
   } on Exception catch (e) {
     safePrint('An error occurred configuring Amplify: $e');
