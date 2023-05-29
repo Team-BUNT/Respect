@@ -17,7 +17,7 @@ class EventDetailScreen extends StatefulWidget {
     required this.event,
   });
 
-  static String routeName = "/event_detail_screen";
+  static String routeName = '/event_detail_screen';
 
   final Event event;
 

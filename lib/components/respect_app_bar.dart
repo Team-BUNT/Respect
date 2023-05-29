@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:respect/screen/add_event_screen.dart';
+import 'package:respect/screen/my_forms_screen.dart';
 import '../constants.dart';
 import '../model/event_type.dart';
 
@@ -54,6 +55,21 @@ class _RespectAppBarState extends State<RespectAppBar>
       ),
       actions: [
         CupertinoButton(
+          padding: const EdgeInsets.all(0.0),
+          child: Image.asset(
+            'asset/icons/addForm.png',
+            width: 28.0,
+            height: 22.0,
+          ),
+          onPressed: () {
+            Navigator.pushNamed(
+              context,
+              MyFormsScreen.routeName,
+            );
+          },
+        ),
+        CupertinoButton(
+          padding: const EdgeInsets.all(0.0),
           child: const Icon(
             CupertinoIcons.add,
             size: 22.0,
@@ -65,7 +81,7 @@ class _RespectAppBarState extends State<RespectAppBar>
               AddEventScreen.routeName,
             );
           },
-        )
+        ),
       ],
       bottom: TabBar(
         controller: tabController,

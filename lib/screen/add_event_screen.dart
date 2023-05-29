@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import '../constants.dart';
+import '../model/apply_form.dart';
 import '../model/calendar_date_picker2_config.dart';
 import '../model/event.dart';
 import '../model/event_genre.dart';
@@ -22,7 +23,7 @@ import 'package:android_id/android_id.dart';
 class AddEventScreen extends StatefulWidget {
   const AddEventScreen({super.key});
 
-  static String routeName = "/add_event_screen";
+  static String routeName = 'add_event_screen';
 
   @override
   State<AddEventScreen> createState() => _AddEventScreenState();
@@ -39,8 +40,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
   EventType eventType = EventType.battle;
   List<String> genre = ['올장르'];
   String? account;
-  List<String> formLinks = [];
-  String formLink = '';
+  List<ApplyForm> myFormList = [];
+  late ApplyForm selectedForm = myFormList.first;
   String? detail;
   String? hostName;
   String? hostContact;
@@ -57,16 +58,12 @@ class _AddEventScreenState extends State<AddEventScreen> {
   final _hostNameTextFieldController = TextEditingController();
   final _hostContactTextFieldController = TextEditingController();
 
-  // ignore: unused_field
   bool _nameFieldError = false;
   String? _nameErrorText;
-  // ignore: unused_field
   bool _locationFieldError = false;
   String? _locationErrorText;
-  // ignore: unused_field
   bool _hostNameFieldError = false;
   String? _hostNameErrorText;
-  // ignore: unused_field
   bool _hostContactFieldError = false;
   String? _hostContactErrorText;
 
@@ -87,7 +84,42 @@ class _AddEventScreenState extends State<AddEventScreen> {
     } else if (Platform.isAndroid) {
       var androidId = await androidIdPlugin.getId();
       return androidId;
+    } else {
+      return null;
     }
+  }
+
+  Future getMyForms() async {
+    List<ApplyForm> tempList = [];
+
+    final deviceId = await getDeviceId();
+    await FirebaseFirestore.instance
+        .collection('forms')
+        .where('deviceId', isEqualTo: deviceId)
+        .orderBy('createAt')
+        .get()
+        .then(
+      (snapshot) {
+        for (var doc in snapshot.docs) {
+          var document = doc.data();
+          String deviceId = document['deviceId'];
+          String name = document['name'];
+          DateTime createAt = (document['createAt'] as Timestamp).toDate();
+          String link = document['link'];
+
+          ApplyForm form = ApplyForm(
+            deviceId: deviceId,
+            name: name,
+            createAt: createAt,
+            link: link,
+          );
+          tempList.add(form);
+          setState(() {
+            myFormList = tempList;
+          });
+        }
+      },
+    );
   }
 
   void _showActionSheet(BuildContext context) {
@@ -152,23 +184,36 @@ class _AddEventScreenState extends State<AddEventScreen> {
     }
   }
 
-  Future<void> _uploadEvent() async {
-    final id = uuid.v1();
+  void _uploadImage() async {
     final originImage =
         image.decodeImage(File(posterImage?.path ?? '').readAsBytesSync());
-    final thumbImage = image.copyResize(originImage!, width: 540);
+    final thumbImage = image.copyResize(originImage!, width: 270);
     final resizedImage = image.copyResize(originImage, width: 1080);
     final tempDir = await getTemporaryDirectory();
     String tempPath = tempDir.path;
 
-    final thumbnail = await amazonS3Util.uploadImage(
+    await amazonS3Util.uploadImage(
         image: File('$tempPath/thumbnail.jpg')
-          ..writeAsBytesSync(image.encodePng(thumbImage),),
+          ..writeAsBytesSync(
+            image.encodePng(thumbImage),
+          ),
         name: '$name/thumbnail.jpg');
-    final posterURL = await amazonS3Util.uploadImage(
+    await amazonS3Util.uploadImage(
         image: File('$tempPath/poster.jpg')
-          ..writeAsBytesSync(image.encodePng(resizedImage),),
+          ..writeAsBytesSync(
+            image.encodePng(resizedImage),
+          ),
         name: '$name/poster.jpg');
+  }
+
+  Future<void> _uploadEvent() async {
+    final id = uuid.v1();
+    final thumbnail =
+        'https://respect332e182126fd429eb476f3e164260ab762544-respect.s3.ap-northeast-2.amazonaws.com/public/$name/thumbnail.jpg';
+    final posterURL =
+        'https://respect332e182126fd429eb476f3e164260ab762544-respect.s3.ap-northeast-2.amazonaws.com/public/$name/posterURL.jpg';
+
+    _uploadImage();
 
     await eventsRef.add(
       Event(
@@ -183,7 +228,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         type: eventType.convertToString,
         genre: genre,
         account: account,
-        formLink: formLink,
+        formLink: selectedForm.link,
         detail: detail,
         hostName: hostName,
         hostContact: hostContact,
@@ -220,6 +265,13 @@ class _AddEventScreenState extends State<AddEventScreen> {
     }
 
     return errorFields;
+  }
+
+  @override
+  void initState() {
+    getMyForms();
+
+    super.initState();
   }
 
   @override
@@ -262,6 +314,20 @@ class _AddEventScreenState extends State<AddEventScreen> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   children: [
+                    const Row(
+                      children: [
+                        Text(
+                          '빨간색 별표 표시된 항목은 필수항목 입니다.',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF636366),
+                            fontFamily: 'Pretendard',
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8.0),
                     const Row(
                       children: [
                         Text(
@@ -1068,14 +1134,14 @@ class _AddEventScreenState extends State<AddEventScreen> {
                     ),
                     const SizedBox(height: 8.0),
                     PullDownButton(
-                      itemBuilder: (context) => formLinks.map((link) {
+                      itemBuilder: (context) => myFormList.map((form) {
                         return PullDownMenuItem.selectable(
                           onTap: () {
                             setState(() {
-                              formLink = link;
+                              selectedForm = form;
                             });
                           },
-                          title: link,
+                          title: form.name,
                         );
                       }).toList(),
                       buttonBuilder: (context, showMenu) => CupertinoButton(
@@ -1087,7 +1153,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                             child: Row(
                               children: [
                                 Text(
-                                  formLink,
+                                  '${(myFormList.indexOf(selectedForm) + 1).toString().padLeft(2, '0')} ${selectedForm.name}',
                                   style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w500,

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:respect/components/event_card.dart';
 import 'package:respect/components/respect_app_bar.dart';
@@ -12,7 +13,7 @@ import '../model/province.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class EventScreen extends StatefulWidget {
-  static String routeName = "/";
+  static String routeName = '/';
 
   const EventScreen({super.key});
 
@@ -48,7 +49,9 @@ class _EventScreenState extends State<EventScreen> {
           String province = document['province'];
           String location = document['location'];
           DateTime date = (document['date'] as Timestamp).toDate();
-          DateTime? dueDate = ((document['dueDate'] == null) ? null : (document['dueDate'] as Timestamp).toDate());
+          DateTime? dueDate = ((document['dueDate'] == null)
+              ? null
+              : (document['dueDate'] as Timestamp).toDate());
           String type = document['type'];
           List<String> genre = List<String>.from(document['genre']);
           String? account = document['account'];
@@ -238,13 +241,10 @@ class _EventScreenState extends State<EventScreen> {
                   child: Text('불러오는 중...'),
                 )
               else
-                GridView.builder(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2, childAspectRatio: 39.0 / 74.0),
-                  itemBuilder: ((context, index) {
-                    Event event = filteredEventList[index];
+                StaggeredGrid.count(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 10.0,
+                  children: filteredEventList.map((event) {
                     return CupertinoButton(
                       padding: const EdgeInsets.all(0.0),
                       child: EventCard(event: event),
@@ -254,8 +254,7 @@ class _EventScreenState extends State<EventScreen> {
                             arguments: event);
                       },
                     );
-                  }),
-                  itemCount: filteredEventList.length,
+                  }).toList(),
                 )
             ],
           ),

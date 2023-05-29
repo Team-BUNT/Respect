@@ -51,12 +51,15 @@ class MyApp extends StatelessWidget {
       initialRoute: EventScreen.routeName,
       routes: routes,
       onGenerateRoute: (settings) {
-        if (settings.name == EventDetailScreen.routeName) {
-          final arguments = settings.arguments as Event;
+        switch (settings.name) {
+          case '/event_detail_screen':
+            final arguments = settings.arguments as Event;
 
-          return MaterialPageRoute(builder: (context) {
-            return EventDetailScreen(event: arguments);
-          });
+            return MaterialPageRoute(
+              builder: (context) => EventDetailScreen(
+                event: arguments,
+              ),
+            );
         }
         return null;
       },
