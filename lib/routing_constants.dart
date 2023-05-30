@@ -9,5 +9,5 @@ final routes = {
   AddEventScreen.routeName: (context) => const AddEventScreen(),
   MyFormsScreen.routeName: (context) => const MyFormsScreen(),
   ApplyFormScreen.routeName: (context) => const ApplyFormScreen(),
-  MakeFormScreen.routeName: (context) => const MakeFormScreen(),
+  // MakeFormScreen.routeName: (context) => const MakeFormScreen(),
 };

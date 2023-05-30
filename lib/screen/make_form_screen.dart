@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:android_id/android_id.dart';
@@ -10,9 +11,11 @@ import 'package:respect/model/apply_form.dart';
 import '../constants.dart';
 
 class MakeFormScreen extends StatefulWidget {
-  const MakeFormScreen({super.key});
+  const MakeFormScreen({super.key, required this.onDismiss});
 
   static String routeName = '/make_form_screen';
+
+  final Function() onDismiss;
 
   @override
   State<MakeFormScreen> createState() => _MakeFormScreenState();
@@ -46,7 +49,7 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
       deviceId: deviceId ?? 'No Id',
       createAt: DateTime.now(),
       link: '',
-      name: '',
+      name: name,
     ));
   }
 
@@ -54,6 +57,7 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
   String name = '';
   final _nameTextFieldFocusNode = FocusNode();
   final _nameTextFieldController = TextEditingController();
+  // ignore: unused_field
   bool _nameFieldError = false;
   String? _nameErrorText;
 
@@ -216,7 +220,10 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
             padding: const EdgeInsets.all(20.0),
             onPressed: () {
               _formKey.currentState!.validate();
-              // _makeForm();
+              _makeForm();
+
+              Navigator.pop(context);
+              widget.onDismiss();
             },
             child: const Row(
               children: [

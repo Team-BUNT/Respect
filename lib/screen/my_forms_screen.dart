@@ -97,60 +97,71 @@ class _MyFormsScreenState extends State<MyFormsScreen> {
               color: Colors.black,
             ),
             onPressed: () {
-              Navigator.pushNamed(
+              Navigator.push(
                 context,
-                MakeFormScreen.routeName,
+                MaterialPageRoute(
+                  builder: (context) => MakeFormScreen(onDismiss: getMyForms),
+                ),
               );
             },
           ),
         ],
       ),
-      body: ListView(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: [
-                const Row(
-                  children: [
-                    Text(
-                      '혹시나 하는 안내사항 부분 입니다.',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0xFF636366),
-                        fontFamily: 'Pretendard',
+      body: RefreshIndicator(
+        color: Colors.black,
+        displacement: 10.0,
+        strokeWidth: 2.0,
+        onRefresh: () async {
+          await getMyForms();
+          setState(() {});
+        },
+        child: ListView(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  const Row(
+                    children: [
+                      Text(
+                        '혹시나 하는 안내사항 부분 입니다.',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xFF636366),
+                          fontFamily: 'Pretendard',
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 21.0),
-                const Row(
-                  children: [
-                    Text(
-                      '나의 신청폼',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black,
-                        fontFamily: 'Pretendard',
+                    ],
+                  ),
+                  const SizedBox(height: 21.0),
+                  const Row(
+                    children: [
+                      Text(
+                        '나의 신청폼',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.black,
+                          fontFamily: 'Pretendard',
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16.0),
-                StaggeredGrid.count(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 10.0,
-                  mainAxisSpacing: 10.0,
-                  children: myFormList.map((form) {
-                    return FormCard(applyForm: form);
-                  }).toList(),
-                )
-              ],
-            ),
-          )
-        ],
+                    ],
+                  ),
+                  const SizedBox(height: 16.0),
+                  StaggeredGrid.count(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 10.0,
+                    mainAxisSpacing: 10.0,
+                    children: myFormList.map((form) {
+                      return FormCard(applyForm: form);
+                    }).toList(),
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
