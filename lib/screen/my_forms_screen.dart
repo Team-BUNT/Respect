@@ -107,6 +107,7 @@ class _MyFormsScreenState extends State<MyFormsScreen> {
           ),
         ],
       ),
+      backgroundColor: Colors.white,
       body: RefreshIndicator(
         color: Colors.black,
         displacement: 10.0,

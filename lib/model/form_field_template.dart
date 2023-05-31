@@ -1,0 +1,45 @@
+enum FormFieldType {
+  short,
+  long,
+  multiple,
+  checkBox,
+}
+
+extension FormFieldTypeExtension on FormFieldType {
+  String get convertToString {
+    switch (this) {
+      case FormFieldType.short:
+        return '단답형';
+      case FormFieldType.long:
+        return '장문형';
+      case FormFieldType.multiple:
+        return '객관식';
+      case FormFieldType.checkBox:
+        return '체크박스';
+      default:
+        return "";
+    }
+  }
+}
+
+class FormFieldTemplate {
+  FormFieldTemplate({
+    this.type = FormFieldType.short,
+    this.title = '',
+    this.shortText = '',
+    this.longText = '',
+    this.options = const ['옵션 1', '옵션 2'],
+    this.selectedOption = '옵션 1',
+    this.checkBoxes = const ['옵션 1', '옵션 2'],
+    this.selectedBoxes = const ['옵션 1', '옵션 2'],
+  });
+
+  FormFieldType type;
+  String? title;
+  String? shortText;
+  String? longText;
+  List<String>? options;
+  String? selectedOption;
+  List<String>? checkBoxes;
+  List<String>? selectedBoxes;
+}

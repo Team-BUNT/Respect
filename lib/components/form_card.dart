@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:respect/model/apply_form.dart';
 
-import '../screen/apply_form_screen.dart';
+import '../screen/form_detail_screen.dart';
 
 class FormCard extends StatelessWidget {
   const FormCard({super.key, required this.applyForm});
@@ -83,7 +83,7 @@ class FormCard extends StatelessWidget {
         onPressed: () {
           Navigator.pushNamed(
             context,
-            ApplyFormScreen.routeName,
+            FormDetailScreen.routeName,
           );
         },
       ),

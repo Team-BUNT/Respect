@@ -7,9 +7,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
+import 'package:provider/provider.dart';
+import 'package:respect/utils/form_maker.dart';
 import 'amplifyconfiguration.dart';
 import 'firebase_options.dart';
 import 'model/event.dart';
+import 'model/form_field_template.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,7 +27,14 @@ Future<void> main() async {
     nativeAppKey: '2d186b69c58ad09c9ab26dc636f3390a',
   );
 
-  runApp(const MyApp());
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(
+          create: (_) => FormMaker(
+              formFieldList: [FormFieldTemplate(type: FormFieldType.short)])),
+    ],
+    child: const RespectApp(),
+  ));
 }
 
 Future<void> _configureAmplify() async {
@@ -40,8 +50,8 @@ Future<void> _configureAmplify() async {
   }
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class RespectApp extends StatelessWidget {
+  const RespectApp({super.key});
 
   @override
   Widget build(BuildContext context) {

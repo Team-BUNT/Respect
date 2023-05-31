@@ -6,8 +6,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:respect/components/form_field_card.dart';
 import 'package:respect/model/apply_form.dart';
-
+import 'package:respect/utils/form_maker.dart';
 import '../constants.dart';
 
 class MakeFormScreen extends StatefulWidget {
@@ -45,12 +47,14 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
 
   Future<void> _makeForm() async {
     final deviceId = await getDeviceId();
-    await formsRef.add(ApplyForm(
-      deviceId: deviceId ?? 'No Id',
-      createAt: DateTime.now(),
-      link: '',
-      name: name,
-    ));
+    await formsRef.doc('${deviceId}_$name').set(
+          ApplyForm(
+            deviceId: deviceId ?? 'No Id',
+            createAt: DateTime.now(),
+            link: '',
+            name: name,
+          ),
+        );
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -60,6 +64,15 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
   // ignore: unused_field
   bool _nameFieldError = false;
   String? _nameErrorText;
+
+  @override
+  void initState() {
+    Future.microtask(() {
+      context.read<FormMaker>().resetFormField();
+    });
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +90,7 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
           backgroundColor: Colors.white,
           elevation: 0.1,
         ),
+        backgroundColor: Colors.white,
         body: Form(
           key: _formKey,
           child: ListView(
@@ -183,6 +197,17 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
                         return null;
                       },
                     ),
+                    ListView.builder(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemCount:
+                          context.select((FormMaker formMaker) => formMaker.formFieldList.length),
+                      itemBuilder: (context, index) {
+                        return FormFieldCard(
+                          fieldIndex: index,
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -208,8 +233,13 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
                     )
                   ],
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  setState(() {
+                    context.read<FormMaker>().addFormField();
+                  });
+                },
               ),
+              const SizedBox(height: 100.0),
             ],
           ),
         ),
@@ -220,16 +250,29 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
             padding: const EdgeInsets.all(20.0),
             onPressed: () {
               _formKey.currentState!.validate();
-              _makeForm();
+              if (_nameFieldError) {
+                const snackBar = SnackBar(
+                  content: Text('필수 항목을 모두 입력해 주세요'),
+                  backgroundColor: Colors.black,
+                  behavior: SnackBarBehavior.floating,
+                  duration: Duration(seconds: 2),
+                );
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
 
-              Navigator.pop(context);
-              widget.onDismiss();
+                _nameTextFieldFocusNode.requestFocus();
+              } else {
+                _makeForm();
+                Navigator.pop(context);
+                widget.onDismiss();
+              }
             },
             child: const Row(
               children: [
                 Spacer(),
                 Text(
-                  '신청폼 저장하기',
+                  '저장하기',
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.w600,

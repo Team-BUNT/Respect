@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:respect/constants.dart';
+import 'package:respect/screen/form_detail_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -122,8 +123,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                           isLoading = true;
                         });
 
-                        final response =
-                            await http.get(Uri.parse(widget.event.thumbnail ?? widget.event.posterURL));
+                        final response = await http.get(Uri.parse(
+                            widget.event.thumbnail ?? widget.event.posterURL));
                         final tempDir = await getTemporaryDirectory();
                         File file =
                             await File('${tempDir.path}/image.png').create();
@@ -313,18 +314,22 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   ),
                 ),
               const SizedBox(height: 36),
-              if (widget.event.link != null || widget.event.formLink != null)
+              if (widget.event.link != null || widget.event.form != null)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: CupertinoButton(
                     color: Colors.black,
                     padding: const EdgeInsets.all(20.0),
                     onPressed: () async {
-                      final url = Uri.parse(
-                          widget.event.formLink ?? widget.event.link!);
+                      if (widget.event.form != null) {
+                        Navigator.pushNamed(
+                            context, FormDetailScreen.routeName);
+                      } else {
+                        final url = Uri.parse(widget.event.link!);
 
-                      if (await canLaunchUrl(url)) {
-                        launchUrl(url);
+                        if (await canLaunchUrl(url)) {
+                          launchUrl(url);
+                        }
                       }
                     },
                     child: const Text(

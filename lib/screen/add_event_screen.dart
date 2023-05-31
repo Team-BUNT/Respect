@@ -41,7 +41,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
   List<String> genre = ['올장르'];
   String? account;
   List<ApplyForm> myFormList = [];
-  late ApplyForm selectedForm = myFormList.first;
+  late ApplyForm? selectedForm;
   String? detail;
   String? hostName;
   String? hostContact;
@@ -68,6 +68,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
   String? _hostContactErrorText;
 
   AmazonS3Util amazonS3Util = AmazonS3Util();
+  final db = FirebaseFirestore.instance;
   final eventsRef = FirebaseFirestore.instance
       .collection('events')
       .withConverter<Event>(
@@ -93,7 +94,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
     List<ApplyForm> tempList = [];
 
     final deviceId = await getDeviceId();
-    await FirebaseFirestore.instance
+    await db
         .collection('forms')
         .where('deviceId', isEqualTo: deviceId)
         .orderBy('createAt')
@@ -120,6 +121,10 @@ class _AddEventScreenState extends State<AddEventScreen> {
         }
       },
     );
+
+    setState(() {
+      selectedForm = myFormList.first;
+    });
   }
 
   void _showActionSheet(BuildContext context) {
@@ -214,6 +219,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
         'https://respect332e182126fd429eb476f3e164260ab762544-respect.s3.ap-northeast-2.amazonaws.com/public/$name/posterURL.jpg';
 
     _uploadImage();
+    final deviceId = await getDeviceId();
+    final form = db.collection('forms').doc('${deviceId}_${selectedForm?.name}');
 
     await eventsRef.add(
       Event(
@@ -228,7 +235,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         type: eventType.convertToString,
         genre: genre,
         account: account,
-        formLink: selectedForm.link,
+        form: form,
         detail: detail,
         hostName: hostName,
         hostContact: hostContact,
@@ -1153,7 +1160,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                             child: Row(
                               children: [
                                 Text(
-                                  '${(myFormList.indexOf(selectedForm) + 1).toString().padLeft(2, '0')} ${selectedForm.name}',
+                                  (selectedForm != null) ? '${(myFormList.indexOf(selectedForm!) + 1).toString().padLeft(2, '0')} ${selectedForm!.name}' : '',
                                   style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w500,
@@ -1469,6 +1476,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
                             _locationFieldError ||
                             _hostNameFieldError ||
                             _hostContactFieldError ||
+                            selectedForm == null ||
                             posterImage == null) {
                           const snackBar = SnackBar(
                             content: Text('필수 항목을 모두 입력해 주세요'),
