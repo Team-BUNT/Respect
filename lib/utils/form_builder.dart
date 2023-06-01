@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 import '../model/form_field_template.dart';
 
-class FormMaker with ChangeNotifier {
+class FormBuilder with ChangeNotifier {
   List<FormFieldTemplate> formFieldList = [FormFieldTemplate()];
 
-  FormMaker({required this.formFieldList});
+  FormBuilder({required this.formFieldList});
 
   List<FormFieldTemplate> getFormFieldList() {
     return formFieldList;

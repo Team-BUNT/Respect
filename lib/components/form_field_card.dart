@@ -34,7 +34,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
 
   @override
   Widget build(BuildContext context) {
-    var model = Provider.of<FormMaker>(context);
+    var model = Provider.of<FormBuilder>(context);
 
     return GestureDetector(
       onTap: () {
@@ -63,7 +63,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
                 ),
                 onPressed: () {
                   context
-                      .read<FormMaker>()
+                      .read<FormBuilder>()
                       .removeFormField(index: widget.fieldIndex);
                 },
               )
@@ -77,25 +77,25 @@ class _FormFieldCardState extends State<FormFieldCard> {
                     onTap: () {
                       setState(() {
                         context
-                            .read<FormMaker>()
+                            .read<FormBuilder>()
                             .formFieldList[widget.fieldIndex]
                             .type = type;
                       });
                       if (type == FormFieldType.short) {
                         context
-                            .read<FormMaker>()
+                            .read<FormBuilder>()
                             .getFormFieldList()[widget.fieldIndex]
                             .shortText = '';
                       }
                       if (type == FormFieldType.long) {
                         context
-                            .read<FormMaker>()
+                            .read<FormBuilder>()
                             .getFormFieldList()[widget.fieldIndex]
                             .longText = '';
                       }
                       if (type == FormFieldType.multiple) {
                         context
-                            .read<FormMaker>()
+                            .read<FormBuilder>()
                             .getFormFieldList()[widget.fieldIndex]
                             .options = ['옵션 1', '옵션 2'];
                         multipleControllers = [
@@ -105,11 +105,11 @@ class _FormFieldCardState extends State<FormFieldCard> {
                       }
                       if (type == FormFieldType.checkBox) {
                         context
-                            .read<FormMaker>()
+                            .read<FormBuilder>()
                             .getFormFieldList()[widget.fieldIndex]
                             .checkBoxes = ['옵션 1', '옵션 2'];
                         context
-                            .read<FormMaker>()
+                            .read<FormBuilder>()
                             .getFormFieldList()[widget.fieldIndex]
                             .selectedBoxes = [];
                         checkBoxesControllers = [
@@ -126,7 +126,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
                   padding: EdgeInsets.zero,
                   child: FilterMenuChip(
                     chipName: context
-                        .watch<FormMaker>()
+                        .watch<FormBuilder>()
                         .getFormFieldList()[widget.fieldIndex]
                         .type
                         .convertToString,
@@ -164,7 +164,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
               model.formFieldList[widget.fieldIndex].title = text;
               setState(() {
                 context
-                    .read<FormMaker>()
+                    .read<FormBuilder>()
                     .formFieldList[widget.fieldIndex]
                     .title = text;
               });
@@ -178,7 +178,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
           ),
           const SizedBox(height: 6.0),
           if (context
-                  .watch<FormMaker>()
+                  .watch<FormBuilder>()
                   .formFieldList[widget.fieldIndex]
                   .type ==
               FormFieldType.short)
@@ -209,7 +209,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
               onChanged: (text) {
                 setState(() {
                   context
-                      .read<FormMaker>()
+                      .read<FormBuilder>()
                       .getFormFieldList()[widget.fieldIndex]
                       .shortText = text;
                 });
@@ -222,7 +222,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
               ),
             ),
           if (context
-                  .watch<FormMaker>()
+                  .watch<FormBuilder>()
                   .formFieldList[widget.fieldIndex]
                   .type ==
               FormFieldType.long)
@@ -254,7 +254,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
               onChanged: (text) {
                 setState(() {
                   context
-                      .read<FormMaker>()
+                      .read<FormBuilder>()
                       .getFormFieldList()[widget.fieldIndex]
                       .longText = text;
                 });
@@ -267,7 +267,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
               ),
             ),
           if (context
-                  .watch<FormMaker>()
+                  .watch<FormBuilder>()
                   .formFieldList[widget.fieldIndex]
                   .type ==
               FormFieldType.multiple)
@@ -282,19 +282,19 @@ class _FormFieldCardState extends State<FormFieldCard> {
                 children: [
                   Column(
                     children: context
-                        .read<FormMaker>()
+                        .read<FormBuilder>()
                         .getFormFieldList()[widget.fieldIndex]
                         .options!
                         .map((option) {
                       return RadioListTile(
                         value: option,
                         groupValue: context
-                            .watch<FormMaker>()
+                            .watch<FormBuilder>()
                             .getFormFieldList()[widget.fieldIndex]
                             .selectedOption,
                         title: TextField(
                           controller: multipleControllers[context
-                              .watch<FormMaker>()
+                              .watch<FormBuilder>()
                               .getFormFieldList()[widget.fieldIndex]
                               .options!
                               .indexOf(option)],
@@ -312,11 +312,11 @@ class _FormFieldCardState extends State<FormFieldCard> {
                           onChanged: (text) {
                             setState(() {
                               context
-                                      .read<FormMaker>()
+                                      .read<FormBuilder>()
                                       .getFormFieldList()[widget.fieldIndex]
                                       .options![
                                   context
-                                      .read<FormMaker>()
+                                      .read<FormBuilder>()
                                       .getFormFieldList()[widget.fieldIndex]
                                       .options!
                                       .indexOf(option)] = text;
@@ -332,7 +332,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
                         onChanged: (option) {
                           setState(() {
                             context
-                                .read<FormMaker>()
+                                .read<FormBuilder>()
                                 .getFormFieldList()[widget.fieldIndex]
                                 .selectedOption = option;
                           });
@@ -344,7 +344,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
                   RadioListTile(
                     value: '',
                     groupValue: context
-                        .watch<FormMaker>()
+                        .watch<FormBuilder>()
                         .getFormFieldList()[widget.fieldIndex]
                         .selectedOption,
                     title: const Text(
@@ -359,11 +359,11 @@ class _FormFieldCardState extends State<FormFieldCard> {
                     onChanged: (_) {
                       setState(() {
                         context
-                            .read<FormMaker>()
+                            .read<FormBuilder>()
                             .getFormFieldList()[widget.fieldIndex]
                             .options!
                             .add(
-                                '옵션 ${context.read<FormMaker>().getFormFieldList()[widget.fieldIndex].options!.length + 1}');
+                                '옵션 ${context.read<FormBuilder>().getFormFieldList()[widget.fieldIndex].options!.length + 1}');
                         multipleControllers.add(TextEditingController());
                       });
                     },
@@ -372,7 +372,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
               ),
             ),
           if (context
-                  .watch<FormMaker>()
+                  .watch<FormBuilder>()
                   .formFieldList[widget.fieldIndex]
                   .type ==
               FormFieldType.checkBox)
@@ -387,14 +387,14 @@ class _FormFieldCardState extends State<FormFieldCard> {
                 children: [
                   Column(
                     children: context
-                        .read<FormMaker>()
+                        .read<FormBuilder>()
                         .getFormFieldList()[widget.fieldIndex]
                         .checkBoxes!
                         .map((option) {
                       return ListTile(
                         title: TextField(
                           controller: checkBoxesControllers[context
-                              .watch<FormMaker>()
+                              .watch<FormBuilder>()
                               .getFormFieldList()[widget.fieldIndex]
                               .checkBoxes!
                               .indexOf(option)],
@@ -412,11 +412,11 @@ class _FormFieldCardState extends State<FormFieldCard> {
                           onChanged: (text) {
                             setState(() {
                               context
-                                      .read<FormMaker>()
+                                      .read<FormBuilder>()
                                       .getFormFieldList()[widget.fieldIndex]
                                       .checkBoxes![
                                   context
-                                      .read<FormMaker>()
+                                      .read<FormBuilder>()
                                       .getFormFieldList()[widget.fieldIndex]
                                       .checkBoxes!
                                       .indexOf(option)] = text;
@@ -431,25 +431,25 @@ class _FormFieldCardState extends State<FormFieldCard> {
                         ),
                         leading: Checkbox(
                           value: context
-                              .watch<FormMaker>()
+                              .watch<FormBuilder>()
                               .getFormFieldList()[widget.fieldIndex]
                               .selectedBoxes!
                               .contains(option),
                           onChanged: (value) {
                             setState(() {
                               if (context
-                                  .read<FormMaker>()
+                                  .read<FormBuilder>()
                                   .getFormFieldList()[widget.fieldIndex]
                                   .selectedBoxes!
                                   .contains(option)) {
                                 context
-                                    .read<FormMaker>()
+                                    .read<FormBuilder>()
                                     .getFormFieldList()[widget.fieldIndex]
                                     .selectedBoxes!
                                     .remove(option);
                               } else {
                                 context
-                                    .read<FormMaker>()
+                                    .read<FormBuilder>()
                                     .getFormFieldList()[widget.fieldIndex]
                                     .selectedBoxes!
                                     .add(option);
@@ -484,11 +484,11 @@ class _FormFieldCardState extends State<FormFieldCard> {
                     onPressed: () {
                       setState(() {
                         context
-                            .read<FormMaker>()
+                            .read<FormBuilder>()
                             .getFormFieldList()[widget.fieldIndex]
                             .checkBoxes!
                             .add(
-                                '옵션 ${context.read<FormMaker>().getFormFieldList()[widget.fieldIndex].checkBoxes!.length + 1}');
+                                '옵션 ${context.read<FormBuilder>().getFormFieldList()[widget.fieldIndex].checkBoxes!.length + 1}');
                         checkBoxesControllers.add(TextEditingController());
                       });
                     },
