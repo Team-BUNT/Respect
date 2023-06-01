@@ -1,6 +1,6 @@
 {
   "auth": {
-    "respectecc581b0": {
+    "respectcf4ecd3a": {
       "customAuth": false,
       "dependsOn": [],
       "frontendAuthConfig": {
@@ -26,7 +26,7 @@
     }
   },
   "storage": {
-    "s35ca1bc02": {
+    "s3f09c6f52": {
       "dependsOn": [],
       "providerPlugin": "awscloudformation",
       "service": "S3"
