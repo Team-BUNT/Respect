@@ -3,13 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:respect/model/form_field_template.dart';
-import '../utils/form_maker.dart';
+import '../utils/form_builder.dart';
 import 'filter_menu_chip.dart';
 
 class FormFieldCard extends StatefulWidget {
-  const FormFieldCard({super.key, required this.fieldIndex});
+  const FormFieldCard(
+      {super.key, required this.fieldIndex, required this.formFieldTemplate});
 
   final int fieldIndex;
+  final FormFieldTemplate formFieldTemplate;
 
   @override
   State<FormFieldCard> createState() => _FormFieldCardState();
@@ -23,18 +25,58 @@ class _FormFieldCardState extends State<FormFieldCard> {
   List<TextEditingController> checkBoxesControllers = [];
 
   FormFieldType selectedType = FormFieldType.short;
+  late List<String> options;
+  late String selectedOption;
+  late List<String> checkBoxes;
+  late List<String> selectedBoxes;
+
+  void _initFields() {
+    titleTextFieldController.text = widget.formFieldTemplate.title;
+    shortTextFieldController.text = widget.formFieldTemplate.shortText;
+    longTextFieldController.text = widget.formFieldTemplate.longText;
+    options = widget.formFieldTemplate.options;
+    selectedOption = widget.formFieldTemplate.selectedOption;
+    checkBoxes = widget.formFieldTemplate.checkBoxes;
+    selectedBoxes = widget.formFieldTemplate.selectedBoxes;
+
+    for (var option in widget.formFieldTemplate.options) {
+      multipleControllers.add(TextEditingController());
+      multipleControllers.last.text = option;
+    }
+    selectedOption = widget.formFieldTemplate.selectedOption;
+    for (var box in widget.formFieldTemplate.checkBoxes) {
+      checkBoxesControllers.add(TextEditingController());
+      checkBoxesControllers.last.text = box;
+    }
+    selectedBoxes = widget.formFieldTemplate.selectedBoxes;
+  }
+
+  @override
+  void initState() {
+    _initFields();
+
+    super.initState();
+  }
 
   @override
   void dispose() {
     titleTextFieldController.dispose();
     shortTextFieldController.dispose();
     longTextFieldController.dispose();
+    for (var controller in multipleControllers) {
+      controller.dispose();
+    }
+    selectedOption = widget.formFieldTemplate.selectedOption;
+    for (var controller in checkBoxesControllers) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    var model = Provider.of<FormBuilder>(context);
+    var formField =
+        context.watch<FormBuilder>().formFieldList[widget.fieldIndex];
 
     return GestureDetector(
       onTap: () {
@@ -76,46 +118,41 @@ class _FormFieldCardState extends State<FormFieldCard> {
                   return PullDownMenuItem.selectable(
                     onTap: () {
                       setState(() {
-                        context
-                            .read<FormBuilder>()
-                            .formFieldList[widget.fieldIndex]
-                            .type = type;
+                        formField.type = type;
                       });
                       if (type == FormFieldType.short) {
-                        context
-                            .read<FormBuilder>()
-                            .getFormFieldList()[widget.fieldIndex]
-                            .shortText = '';
+                        formField.shortText = '';
+                        shortTextFieldController.text = '';
                       }
                       if (type == FormFieldType.long) {
-                        context
-                            .read<FormBuilder>()
-                            .getFormFieldList()[widget.fieldIndex]
-                            .longText = '';
+                        formField.longText = '';
+                        longTextFieldController.text = '';
                       }
                       if (type == FormFieldType.multiple) {
-                        context
-                            .read<FormBuilder>()
-                            .getFormFieldList()[widget.fieldIndex]
-                            .options = ['옵션 1', '옵션 2'];
-                        multipleControllers = [
-                          TextEditingController(),
-                          TextEditingController(),
-                        ];
+                        setState(() {
+                          options = ['옵션 1', '옵션 2'];
+                          selectedOption = '옵션 1';
+                          multipleControllers = [
+                            TextEditingController(),
+                            TextEditingController()
+                          ];
+                          multipleControllers[0].text = '옵션 1';
+                          multipleControllers[1].text = '옵션 2';
+                        });
+                        formField.options = ['옵션 1', '옵션 2'];
                       }
                       if (type == FormFieldType.checkBox) {
-                        context
-                            .read<FormBuilder>()
-                            .getFormFieldList()[widget.fieldIndex]
-                            .checkBoxes = ['옵션 1', '옵션 2'];
-                        context
-                            .read<FormBuilder>()
-                            .getFormFieldList()[widget.fieldIndex]
-                            .selectedBoxes = [];
-                        checkBoxesControllers = [
-                          TextEditingController(),
-                          TextEditingController(),
-                        ];
+                        setState(() {
+                          checkBoxes = ['옵션 1', '옵션 2'];
+                          formField.selectedBoxes = [];
+                          checkBoxesControllers = [
+                            TextEditingController(),
+                            TextEditingController()
+                          ];
+                          checkBoxesControllers[0].text = '옵션 1';
+                          checkBoxesControllers[1].text = '옵션 2';
+                        });
+                        formField.checkBoxes = ['옵션 1', '옵션 2'];
                       }
                     },
                     title: type.convertToString,
@@ -125,11 +162,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
                   onPressed: showMenu,
                   padding: EdgeInsets.zero,
                   child: FilterMenuChip(
-                    chipName: context
-                        .watch<FormBuilder>()
-                        .getFormFieldList()[widget.fieldIndex]
-                        .type
-                        .convertToString,
+                    chipName: formField.type.convertToString,
                   ),
                 ),
               ),
@@ -161,13 +194,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
               ),
             ),
             onChanged: (text) {
-              model.formFieldList[widget.fieldIndex].title = text;
-              setState(() {
-                context
-                    .read<FormBuilder>()
-                    .formFieldList[widget.fieldIndex]
-                    .title = text;
-              });
+              formField.title = text;
             },
             style: const TextStyle(
               fontSize: 15,
@@ -177,11 +204,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
             ),
           ),
           const SizedBox(height: 6.0),
-          if (context
-                  .watch<FormBuilder>()
-                  .formFieldList[widget.fieldIndex]
-                  .type ==
-              FormFieldType.short)
+          if (formField.type == FormFieldType.short)
             TextField(
               controller: shortTextFieldController,
               cursorColor: Colors.black,
@@ -207,12 +230,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
                 ),
               ),
               onChanged: (text) {
-                setState(() {
-                  context
-                      .read<FormBuilder>()
-                      .getFormFieldList()[widget.fieldIndex]
-                      .shortText = text;
-                });
+                formField.shortText = text;
               },
               style: const TextStyle(
                 fontSize: 15,
@@ -221,13 +239,9 @@ class _FormFieldCardState extends State<FormFieldCard> {
                 fontFamily: 'Pretendard',
               ),
             ),
-          if (context
-                  .watch<FormBuilder>()
-                  .formFieldList[widget.fieldIndex]
-                  .type ==
-              FormFieldType.long)
+          if (formField.type == FormFieldType.long)
             TextField(
-              controller: shortTextFieldController,
+              controller: longTextFieldController,
               cursorColor: Colors.black,
               maxLines: 15,
               decoration: InputDecoration(
@@ -252,12 +266,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
                 ),
               ),
               onChanged: (text) {
-                setState(() {
-                  context
-                      .read<FormBuilder>()
-                      .getFormFieldList()[widget.fieldIndex]
-                      .longText = text;
-                });
+                formField.longText = text;
               },
               style: const TextStyle(
                 fontSize: 15,
@@ -266,11 +275,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
                 fontFamily: 'Pretendard',
               ),
             ),
-          if (context
-                  .watch<FormBuilder>()
-                  .formFieldList[widget.fieldIndex]
-                  .type ==
-              FormFieldType.multiple)
+          if (formField.type == FormFieldType.multiple)
             Container(
               decoration: const BoxDecoration(
                 color: Color(0xFFF4F4F4),
@@ -281,23 +286,14 @@ class _FormFieldCardState extends State<FormFieldCard> {
               child: Column(
                 children: [
                   Column(
-                    children: context
-                        .read<FormBuilder>()
-                        .getFormFieldList()[widget.fieldIndex]
-                        .options!
-                        .map((option) {
+                    children: options.map((option) {
+                      final controllerIndex = options.indexOf(option);
                       return RadioListTile(
                         value: option,
-                        groupValue: context
-                            .watch<FormBuilder>()
-                            .getFormFieldList()[widget.fieldIndex]
-                            .selectedOption,
+                        groupValue: selectedOption,
                         title: TextField(
-                          controller: multipleControllers[context
-                              .watch<FormBuilder>()
-                              .getFormFieldList()[widget.fieldIndex]
-                              .options!
-                              .indexOf(option)],
+                          controller:
+                              multipleControllers[controllerIndex],
                           cursorColor: Colors.black,
                           decoration: InputDecoration(
                               hintText: option,
@@ -311,16 +307,10 @@ class _FormFieldCardState extends State<FormFieldCard> {
                               border: InputBorder.none),
                           onChanged: (text) {
                             setState(() {
-                              context
-                                      .read<FormBuilder>()
-                                      .getFormFieldList()[widget.fieldIndex]
-                                      .options![
-                                  context
-                                      .read<FormBuilder>()
-                                      .getFormFieldList()[widget.fieldIndex]
-                                      .options!
-                                      .indexOf(option)] = text;
+                              options[options.indexOf(option)] = text;
                             });
+                            formField.options[
+                                formField.options.indexOf(option)] = text;
                           },
                           style: const TextStyle(
                             fontSize: 15,
@@ -331,18 +321,16 @@ class _FormFieldCardState extends State<FormFieldCard> {
                         ),
                         onChanged: (option) {
                           setState(() {
-                            context
-                                .read<FormBuilder>()
-                                .getFormFieldList()[widget.fieldIndex]
-                                .selectedOption = option;
+                            selectedOption = option ?? '';
                           });
+                          formField.selectedOption = option ?? '';
                         },
                         activeColor: Colors.black,
                       );
                     }).toList(),
                   ),
                   RadioListTile(
-                    value: '',
+                    value: null,
                     groupValue: context
                         .watch<FormBuilder>()
                         .getFormFieldList()[widget.fieldIndex]
@@ -358,24 +346,17 @@ class _FormFieldCardState extends State<FormFieldCard> {
                     ),
                     onChanged: (_) {
                       setState(() {
-                        context
-                            .read<FormBuilder>()
-                            .getFormFieldList()[widget.fieldIndex]
-                            .options!
-                            .add(
-                                '옵션 ${context.read<FormBuilder>().getFormFieldList()[widget.fieldIndex].options!.length + 1}');
+                        options.add('옵션 ${options.length + 1}');
                         multipleControllers.add(TextEditingController());
                       });
+                      formField.options
+                          .add('옵션 ${formField.options.length + 1}');
                     },
                   ),
                 ],
               ),
             ),
-          if (context
-                  .watch<FormBuilder>()
-                  .formFieldList[widget.fieldIndex]
-                  .type ==
-              FormFieldType.checkBox)
+          if (formField.type == FormFieldType.checkBox)
             Container(
               decoration: const BoxDecoration(
                 color: Color(0xFFF4F4F4),
@@ -386,18 +367,12 @@ class _FormFieldCardState extends State<FormFieldCard> {
               child: Column(
                 children: [
                   Column(
-                    children: context
-                        .read<FormBuilder>()
-                        .getFormFieldList()[widget.fieldIndex]
-                        .checkBoxes!
-                        .map((option) {
+                    children: checkBoxes.map((option) {
+                      final controllerIndex = options.indexOf(option);
                       return ListTile(
                         title: TextField(
-                          controller: checkBoxesControllers[context
-                              .watch<FormBuilder>()
-                              .getFormFieldList()[widget.fieldIndex]
-                              .checkBoxes!
-                              .indexOf(option)],
+                          controller:
+                              checkBoxesControllers[controllerIndex],
                           cursorColor: Colors.black,
                           decoration: InputDecoration(
                               hintText: option,
@@ -411,16 +386,10 @@ class _FormFieldCardState extends State<FormFieldCard> {
                               border: InputBorder.none),
                           onChanged: (text) {
                             setState(() {
-                              context
-                                      .read<FormBuilder>()
-                                      .getFormFieldList()[widget.fieldIndex]
-                                      .checkBoxes![
-                                  context
-                                      .read<FormBuilder>()
-                                      .getFormFieldList()[widget.fieldIndex]
-                                      .checkBoxes!
-                                      .indexOf(option)] = text;
+                              checkBoxes[checkBoxes.indexOf(option)] = text;
                             });
+                            formField.checkBoxes[
+                                formField.checkBoxes.indexOf(option)] = text;
                           },
                           style: const TextStyle(
                             fontSize: 15,
@@ -430,31 +399,20 @@ class _FormFieldCardState extends State<FormFieldCard> {
                           ),
                         ),
                         leading: Checkbox(
-                          value: context
-                              .watch<FormBuilder>()
-                              .getFormFieldList()[widget.fieldIndex]
-                              .selectedBoxes!
-                              .contains(option),
+                          value: selectedBoxes.contains(option),
                           onChanged: (value) {
                             setState(() {
-                              if (context
-                                  .read<FormBuilder>()
-                                  .getFormFieldList()[widget.fieldIndex]
-                                  .selectedBoxes!
-                                  .contains(option)) {
-                                context
-                                    .read<FormBuilder>()
-                                    .getFormFieldList()[widget.fieldIndex]
-                                    .selectedBoxes!
-                                    .remove(option);
+                              if (selectedBoxes.contains(option)) {
+                                selectedBoxes.remove(option);
                               } else {
-                                context
-                                    .read<FormBuilder>()
-                                    .getFormFieldList()[widget.fieldIndex]
-                                    .selectedBoxes!
-                                    .add(option);
+                                selectedBoxes.add(option);
                               }
                             });
+                            if (formField.selectedBoxes.contains(option)) {
+                              formField.selectedBoxes.remove(option);
+                            } else {
+                              formField.selectedBoxes.remove(option);
+                            }
                           },
                           checkColor: Colors.white,
                           activeColor: Colors.black,
@@ -476,21 +434,16 @@ class _FormFieldCardState extends State<FormFieldCard> {
                       ),
                       leading: Checkbox(
                         value: false,
-                        onChanged: (value) {
-                          setState(() {});
-                        },
+                        onChanged: (_) {},
                       ),
                     ),
                     onPressed: () {
                       setState(() {
-                        context
-                            .read<FormBuilder>()
-                            .getFormFieldList()[widget.fieldIndex]
-                            .checkBoxes!
-                            .add(
-                                '옵션 ${context.read<FormBuilder>().getFormFieldList()[widget.fieldIndex].checkBoxes!.length + 1}');
+                        checkBoxes.add('옵션 ${checkBoxes.length + 1}');
                         checkBoxesControllers.add(TextEditingController());
                       });
+                      formField.checkBoxes
+                          .add('옵션 ${formField.checkBoxes.length + 1}');
                     },
                   ),
                 ],

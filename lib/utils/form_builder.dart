@@ -13,16 +13,7 @@ class FormBuilder with ChangeNotifier {
 
   void addFormField() {
     formFieldList.add(
-      FormFieldTemplate(
-        type: FormFieldType.short,
-        title: '',
-        shortText: '',
-        longText: '',
-        options: ['옵션 1', '옵션 2'],
-        selectedOption: '옵션 1',
-        checkBoxes: ['옵션 1', '옵션 2'],
-        selectedBoxes: [],
-      ),
+      FormFieldTemplate(),
     );
     notifyListeners();
   }

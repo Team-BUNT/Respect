@@ -31,15 +31,15 @@ class FormFieldTemplate {
     this.options = const ['옵션 1', '옵션 2'],
     this.selectedOption = '옵션 1',
     this.checkBoxes = const ['옵션 1', '옵션 2'],
-    this.selectedBoxes = const ['옵션 1', '옵션 2'],
+    this.selectedBoxes = const [],
   });
 
   FormFieldType type;
-  String? title;
-  String? shortText;
-  String? longText;
-  List<String>? options;
-  String? selectedOption;
-  List<String>? checkBoxes;
-  List<String>? selectedBoxes;
+  String title;
+  String shortText;
+  String longText;
+  List<String> options;
+  String selectedOption;
+  List<String> checkBoxes;
+  List<String> selectedBoxes;
 }
