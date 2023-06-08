@@ -90,8 +90,15 @@ class _MyFormsScreenState extends State<MyFormsScreen>
       vsync: this,
       // animationDuration: Duration.zero,
     );
+    tabController.addListener(_handleSelected);
 
     super.initState();
+  }
+
+  void _handleSelected() {
+    setState(() {
+      tabController.index;
+    });
   }
 
   @override
@@ -145,18 +152,21 @@ class _MyFormsScreenState extends State<MyFormsScreen>
             child: Column(
               children: [
                 if (myFormList.isEmpty)
-                  Row(
-                    children: [
-                      Text(
-                        isLoading ? '신청폼을 불러오는 중입니다..' : '아직 작성한 신청폼이 없습니다.',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xFF636366),
-                          fontFamily: 'Pretendard',
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      children: [
+                        Text(
+                          isLoading ? '신청폼을 불러오는 중입니다..' : '아직 작성한 신청폼이 없습니다.',
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0xFF636366),
+                            fontFamily: 'Pretendard',
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   )
                 else
                   TabBar(

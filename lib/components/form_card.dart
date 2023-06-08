@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:respect/model/apply_form.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../screen/form_detail_screen.dart';
 
@@ -66,8 +67,13 @@ class FormCard extends StatelessWidget {
             ),
           ],
         ),
-        onPressed: () {
+        onPressed: () async {
           if (isResultView) {
+            final url = Uri.parse('https://www.naver.com');
+
+            if (await canLaunchUrl(url)) {
+              launchUrl(url);
+            }
             print('결과 창');
           } else {
             Navigator.pushNamed(
