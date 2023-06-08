@@ -132,8 +132,18 @@ class _MyFormsScreenState extends State<MyFormsScreen>
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) =>
-                          MakeFormScreen(onDismiss: getMyForms),
+                      builder: (context) => MakeFormScreen(onDismiss: () {
+                        const snackBar = SnackBar(
+                          content: Text('새로운 신청폼이 저장되었습니다.'),
+                          backgroundColor: Colors.black,
+                          behavior: SnackBarBehavior.floating,
+                          duration: Duration(seconds: 2),
+                        );
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        }
+                        getMyForms();
+                      }),
                     ),
                   );
                 },

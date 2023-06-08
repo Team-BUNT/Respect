@@ -88,6 +88,52 @@ class _ApplyFormScreenState extends State<ApplyFormScreen> {
     });
   }
 
+  void _showAlert(BuildContext context) {
+    showCupertinoDialog(
+      context: context,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: const Text('행사 등록'),
+          content: const Column(
+            children: [
+              Text('제출한 내용은 재확인이 불가능하니'),
+              Text('유의하여 검토해주시길 바랍니다.'),
+              Text('제출하시겠습니까?'),
+            ],
+          ),
+          actions: [
+            CupertinoDialogAction(
+              isDefaultAction: false,
+              child: const Text("취소"),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            CupertinoDialogAction(
+              isDefaultAction: true,
+              child: const Text("확인"),
+              onPressed: () {
+                //TODO: 스프레드시트 데이터 업로드
+                Navigator.pop(context);
+                Navigator.pop(context);
+
+                const snackBar = SnackBar(
+                  content: Text('신청폼이 제출되었습니다.'),
+                  backgroundColor: Colors.black,
+                  behavior: SnackBarBehavior.floating,
+                  duration: Duration(seconds: 2),
+                );
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                }
+              },
+            )
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void initState() {
     getApplyForms();
@@ -217,8 +263,7 @@ class _ApplyFormScreenState extends State<ApplyFormScreen> {
                                 .showSnackBar(snackBar);
                           }
                         } else {
-                          //TODO: 스프레드시트 데이터 업로드
-                          Navigator.pop(context);
+                          if (context.mounted) _showAlert(context);
                         }
                       },
                       child: const Row(
@@ -238,7 +283,7 @@ class _ApplyFormScreenState extends State<ApplyFormScreen> {
                       ),
                     ),
                   )
-                  else
+                else
                   const SizedBox.shrink()
               ],
             ),
