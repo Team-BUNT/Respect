@@ -2,9 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:respect/model/apply_form.dart';
+import 'package:respect/screen/apply_form_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
-
-import '../screen/form_detail_screen.dart';
 
 class FormCard extends StatelessWidget {
   const FormCard(
@@ -68,17 +67,20 @@ class FormCard extends StatelessWidget {
           ],
         ),
         onPressed: () async {
+          //TODO: 구글 시트 링크 연결
           if (isResultView) {
             final url = Uri.parse('https://www.naver.com');
 
             if (await canLaunchUrl(url)) {
               launchUrl(url);
             }
-            print('결과 창');
           } else {
             Navigator.pushNamed(
               context,
-              FormDetailScreen.routeName,
+              ApplyFormScreen.routeName,
+              arguments: ApplyFormScreenArguments(
+                  isAdmin: true,
+                  applyFormDocument: '${applyForm.deviceId}_${applyForm.name}'),
             );
           }
         },

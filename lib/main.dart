@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
 import 'package:respect/routing_constants.dart';
+import 'package:respect/screen/apply_form_screen.dart';
 import 'package:respect/screen/event_detail_screen.dart';
 import 'package:respect/screen/events_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -70,6 +71,15 @@ class RespectApp extends StatelessWidget {
             return MaterialPageRoute(
               builder: (context) => EventDetailScreen(
                 event: arguments,
+              ),
+            );
+
+          case '/apply_form_screen':
+            final arguments = settings.arguments as ApplyFormScreenArguments;
+
+            return MaterialPageRoute(
+              builder: (context) => ApplyFormScreen(
+                args: arguments,
               ),
             );
         }

@@ -61,31 +61,4 @@ class FormFieldTemplate {
   String selectedOption;
   List<String> checkBoxes;
   List<String> selectedBoxes;
-
-  FormFieldTemplate.fromFirestore(Map<String, Object?> json)
-      : this(
-          index: json['index'] as int,
-          type: (json['type'] as String).convertToFormFieldType,
-          title: json['title'] as String,
-          shortText: json['shortText'] as String,
-          longText: json['longText'] as String,
-          options: json['options'] as List<String>,
-          selectedOption: json['selectedOption'] as String,
-          checkBoxes: json['checkBoxes'] as List<String>,
-          selectedBoxes: json['selectedBoxes'] as List<String>,
-        );
-
-  Map<String, Object?> toFirestore() {
-    return {
-      'index': index,
-      'type': type.convertToString,
-      'title': title,
-      'shortText': shortText,
-      'longText': longText,
-      'options': options,
-      'selectedOption': selectedOption,
-      'checkBoxes': checkBoxes,
-      'selectedBoxes': selectedBoxes,
-    };
-  }
 }

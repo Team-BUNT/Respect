@@ -47,12 +47,10 @@ class _FormFieldCardState extends State<FormFieldCard> {
       multipleControllers.add(TextEditingController());
       multipleControllers.last.text = option;
     }
-    selectedOption = widget.formFieldTemplate.selectedOption;
     for (var box in widget.formFieldTemplate.checkBoxes) {
       checkBoxesControllers.add(TextEditingController());
       checkBoxesControllers.last.text = box;
     }
-    selectedBoxes = widget.formFieldTemplate.selectedBoxes;
   }
 
   @override
@@ -70,7 +68,6 @@ class _FormFieldCardState extends State<FormFieldCard> {
     for (var controller in multipleControllers) {
       controller.dispose();
     }
-    selectedOption = widget.formFieldTemplate.selectedOption;
     for (var controller in checkBoxesControllers) {
       controller.dispose();
     }

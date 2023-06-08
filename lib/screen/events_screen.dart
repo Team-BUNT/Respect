@@ -55,7 +55,7 @@ class _EventScreenState extends State<EventScreen> {
           String type = document['type'];
           List<String> genre = List<String>.from(document['genre']);
           String? account = document['account'];
-          DocumentReference? form = document['form'];
+          String? form = document['form'];
           String? link = document['link'];
           String? detail = document['detail'];
           String? hostName = document['hostName'];

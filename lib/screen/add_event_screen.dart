@@ -216,11 +216,11 @@ class _AddEventScreenState extends State<AddEventScreen> {
     final thumbnail =
         'https://respect332e182126fd429eb476f3e164260ab762544-respect.s3.ap-northeast-2.amazonaws.com/public/$name/thumbnail.jpg';
     final posterURL =
-        'https://respect332e182126fd429eb476f3e164260ab762544-respect.s3.ap-northeast-2.amazonaws.com/public/$name/posterURL.jpg';
+        'https://respect332e182126fd429eb476f3e164260ab762544-respect.s3.ap-northeast-2.amazonaws.com/public/$name/poster.jpg';
 
     _uploadImage();
     final deviceId = await getDeviceId();
-    final form = db.collection('forms').doc('${deviceId}_${selectedForm?.name}');
+    final form = '${deviceId}_${selectedForm?.name}';
 
     await eventsRef.add(
       Event(

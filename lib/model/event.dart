@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class Event {
   Event(
       {required this.id,
@@ -32,7 +30,7 @@ class Event {
   final List<String> genre;
   final String? account;
   final String? link;
-  final DocumentReference? form;
+  final String? form;
   final String? detail;
   final String? hostName;
   final String? hostContact;
@@ -52,7 +50,7 @@ class Event {
           genre: json['genre'] as List<String>,
           account: json['account'] as String,
           link: json['link'] as String,
-          form: json['form'] as DocumentReference,
+          form: json['form'] as String,
           detail: json['detail'] as String,
           hostName: json['hostName'] as String,
           hostContact: json['hostContact'] as String,

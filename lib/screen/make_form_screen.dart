@@ -65,10 +65,10 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
         'title': field.title,
         'shortText': '',
         'longText': '',
-        'options': (field.type == FormFieldType.multiple) ? field.options : '',
+        'options': (field.type == FormFieldType.multiple) ? field.options : [],
         'selectedOption': '',
         'checkBoxes':
-            (field.type == FormFieldType.checkBox) ? field.checkBoxes : '',
+            (field.type == FormFieldType.checkBox) ? field.checkBoxes : [],
         'selectedBoxes': [],
       });
     }
@@ -78,7 +78,6 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
   String name = '';
   final _nameTextFieldFocusNode = FocusNode();
   final _nameTextFieldController = TextEditingController();
-  // ignore: unused_field
   bool _nameFieldError = false;
   String? _nameErrorText;
 

@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:respect/constants.dart';
-import 'package:respect/screen/form_detail_screen.dart';
+import 'package:respect/screen/apply_form_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -247,35 +247,39 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       ],
                     ),
                     if (widget.event.account != null)
-                      const SizedBox(height: 16.0),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(
-                          width: 70,
-                          child: Text(
-                            '계좌 번호',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w500,
-                              color: Color(0xFF7A7A7A),
-                              fontFamily: 'Pretendard',
-                            ),
+                      Column(
+                        children: [
+                          const SizedBox(height: 16.0),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(
+                                width: 70,
+                                child: Text(
+                                  '계좌 번호',
+                                  style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color(0xFF7A7A7A),
+                                    fontFamily: 'Pretendard',
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  widget.event.account ?? '??',
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w400,
+                                    color: Color(0xFF2E2E2E),
+                                    fontFamily: 'Pretendard',
+                                  ),
+                                ),
+                              )
+                            ],
                           ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            widget.event.account ?? '??',
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xFF2E2E2E),
-                              fontFamily: 'Pretendard',
-                            ),
-                          ),
-                        )
-                      ],
-                    ),
+                        ],
+                      )
                   ],
                 ),
               ),
@@ -327,7 +331,12 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     onPressed: () async {
                       if (widget.event.form != null) {
                         Navigator.pushNamed(
-                            context, FormDetailScreen.routeName);
+                          context,
+                          ApplyFormScreen.routeName,
+                          arguments: ApplyFormScreenArguments(
+                              isAdmin: false,
+                              applyFormDocument: widget.event.form ?? ''),
+                        );
                       } else {
                         final url = Uri.parse(widget.event.link!);
 
