@@ -8,7 +8,10 @@ import 'filter_menu_chip.dart';
 
 class FormFieldCard extends StatefulWidget {
   const FormFieldCard(
-      {super.key, required this.isEditingMode, required this.fieldIndex, required this.formFieldTemplate});
+      {super.key,
+      required this.isEditingMode,
+      required this.fieldIndex,
+      required this.formFieldTemplate});
 
   final int fieldIndex;
   final FormFieldTemplate formFieldTemplate;
@@ -131,25 +134,25 @@ class _FormFieldCardState extends State<FormFieldCard> {
                       }
                       if (type == FormFieldType.multiple) {
                         setState(() {
-                          options = ['옵션 1'];
+                          options = [''];
                           selectedOption = '';
                           multipleControllers = [
                             TextEditingController(),
                           ];
                           multipleControllers[0].text = '';
                         });
-                        formField.options = ['옵션 1'];
+                        formField.options = [''];
                       }
                       if (type == FormFieldType.checkBox) {
                         setState(() {
-                          checkBoxes = ['옵션 1'];
+                          checkBoxes = [''];
                           formField.selectedBoxes = [];
                           checkBoxesControllers = [
                             TextEditingController(),
                           ];
                           checkBoxesControllers[0].text = '';
                         });
-                        formField.checkBoxes = ['옵션 1'];
+                        formField.checkBoxes = [''];
                       }
                     },
                     title: type.convertToString,
@@ -289,8 +292,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
                         value: option,
                         groupValue: selectedOption,
                         title: TextField(
-                          controller:
-                              multipleControllers[controllerIndex],
+                          controller: multipleControllers[controllerIndex],
                           cursorColor: Colors.black,
                           decoration: InputDecoration(
                               hintText: '옵션 ${controllerIndex + 1}',
@@ -304,10 +306,9 @@ class _FormFieldCardState extends State<FormFieldCard> {
                               border: InputBorder.none),
                           onChanged: (text) {
                             setState(() {
-                              options[options.indexOf(option)] = text;
+                              options[controllerIndex] = text;
                             });
-                            formField.options[
-                                formField.options.indexOf(option)] = text;
+                            formField.options[controllerIndex] = text;
                           },
                           style: const TextStyle(
                             fontSize: 15,
@@ -327,30 +328,30 @@ class _FormFieldCardState extends State<FormFieldCard> {
                     }).toList(),
                   ),
                   if (widget.isEditingMode)
-                  RadioListTile(
-                    value: null,
-                    groupValue: context
-                        .watch<FormBuilder>()
-                        .getFormFieldList()[widget.fieldIndex]
-                        .selectedOption,
-                    title: const Text(
-                      '옵션 추가',
-                      style: TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
-                        color: Color(0XFF636366),
-                        fontFamily: 'Pretendard',
+                    RadioListTile(
+                      value: null,
+                      groupValue: context
+                          .watch<FormBuilder>()
+                          .getFormFieldList()[widget.fieldIndex]
+                          .selectedOption,
+                      title: const Text(
+                        '옵션 추가',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0XFF636366),
+                          fontFamily: 'Pretendard',
+                        ),
                       ),
+                      onChanged: (_) {
+                        setState(() {
+                          options.add('옵션 ${options.length + 1}');
+                          multipleControllers.add(TextEditingController());
+                        });
+                        formField.options
+                            .add('옵션 ${formField.options.length + 1}');
+                      },
                     ),
-                    onChanged: (_) {
-                      setState(() {
-                        options.add('옵션 ${options.length + 1}');
-                        multipleControllers.add(TextEditingController());
-                      });
-                      formField.options
-                          .add('옵션 ${formField.options.length + 1}');
-                    },
-                  ),
                 ],
               ),
             ),
@@ -369,8 +370,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
                       final controllerIndex = checkBoxes.indexOf(option);
                       return ListTile(
                         title: TextField(
-                          controller:
-                              checkBoxesControllers[controllerIndex],
+                          controller: checkBoxesControllers[controllerIndex],
                           cursorColor: Colors.black,
                           decoration: InputDecoration(
                               hintText: '옵션 ${controllerIndex + 1}',
@@ -384,10 +384,9 @@ class _FormFieldCardState extends State<FormFieldCard> {
                               border: InputBorder.none),
                           onChanged: (text) {
                             setState(() {
-                              checkBoxes[checkBoxes.indexOf(option)] = text;
+                              checkBoxes[controllerIndex] = text;
                             });
-                            formField.checkBoxes[
-                                formField.checkBoxes.indexOf(option)] = text;
+                            formField.checkBoxes[controllerIndex] = text;
                           },
                           style: const TextStyle(
                             fontSize: 15,
@@ -419,36 +418,36 @@ class _FormFieldCardState extends State<FormFieldCard> {
                     }).toList(),
                   ),
                   if (widget.isEditingMode)
-                  CupertinoButton(
-                    padding: const EdgeInsets.all(0.0),
-                    child: ListTile(
-                      title: const Text(
-                        '옵션 추가',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0XFF636366),
-                          fontFamily: 'Pretendard',
+                    CupertinoButton(
+                      padding: const EdgeInsets.all(0.0),
+                      child: ListTile(
+                        title: const Text(
+                          '옵션 추가',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w400,
+                            color: Color(0XFF636366),
+                            fontFamily: 'Pretendard',
+                          ),
+                        ),
+                        leading: Checkbox(
+                          value: false,
+                          onChanged: (_) {},
                         ),
                       ),
-                      leading: Checkbox(
-                        value: false,
-                        onChanged: (_) {},
-                      ),
+                      onPressed: () {
+                        setState(() {
+                          checkBoxes.add('옵션 ${checkBoxes.length + 1}');
+                          checkBoxesControllers.add(TextEditingController());
+                        });
+                        formField.checkBoxes
+                            .add('옵션 ${formField.checkBoxes.length + 1}');
+                      },
                     ),
-                    onPressed: () {
-                      setState(() {
-                        checkBoxes.add('옵션 ${checkBoxes.length + 1}');
-                        checkBoxesControllers.add(TextEditingController());
-                      });
-                      formField.checkBoxes
-                          .add('옵션 ${formField.checkBoxes.length + 1}');
-                    },
-                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+          const SizedBox(height: 24),
         ],
       ),
     );

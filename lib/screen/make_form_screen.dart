@@ -60,11 +60,11 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
 
     for (FormFieldTemplate field in fieldList) {
       await formsRef.doc('${deviceId}_$name').collection('formFields').add({
-        'index': fieldList.indexOf(field).toString(),
+        'index': fieldList.indexOf(field),
         'type': field.type.convertToString,
         'title': field.title,
-        'shortText': (field.type == FormFieldType.short) ? field.shortText : '',
-        'longText': (field.type == FormFieldType.long) ? field.longText : '',
+        'shortText': '',
+        'longText': '',
         'options': (field.type == FormFieldType.multiple) ? field.options : '',
         'selectedOption': '',
         'checkBoxes':

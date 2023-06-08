@@ -22,6 +22,23 @@ extension FormFieldTypeExtension on FormFieldType {
   }
 }
 
+extension FormFieldTypeStringExtension on String {
+  FormFieldType get convertToFormFieldType {
+    switch (this) {
+      case '단답형':
+        return FormFieldType.short;
+      case '장문형':
+        return FormFieldType.long;
+      case '객관식':
+        return FormFieldType.multiple;
+      case '체크박스':
+        return FormFieldType.checkBox;
+      default:
+        return FormFieldType.short;
+    }
+  }
+}
+
 class FormFieldTemplate {
   FormFieldTemplate({
     this.index = 0,
@@ -44,4 +61,31 @@ class FormFieldTemplate {
   String selectedOption;
   List<String> checkBoxes;
   List<String> selectedBoxes;
+
+  FormFieldTemplate.fromFirestore(Map<String, Object?> json)
+      : this(
+          index: json['index'] as int,
+          type: (json['type'] as String).convertToFormFieldType,
+          title: json['title'] as String,
+          shortText: json['shortText'] as String,
+          longText: json['longText'] as String,
+          options: json['options'] as List<String>,
+          selectedOption: json['selectedOption'] as String,
+          checkBoxes: json['checkBoxes'] as List<String>,
+          selectedBoxes: json['selectedBoxes'] as List<String>,
+        );
+
+  Map<String, Object?> toFirestore() {
+    return {
+      'index': index,
+      'type': type.convertToString,
+      'title': title,
+      'shortText': shortText,
+      'longText': longText,
+      'options': options,
+      'selectedOption': selectedOption,
+      'checkBoxes': checkBoxes,
+      'selectedBoxes': selectedBoxes,
+    };
+  }
 }
