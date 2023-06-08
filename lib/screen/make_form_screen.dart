@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:android_id/android_id.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info_plus/device_info_plus.dart';
@@ -9,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:respect/components/form_field_card.dart';
 import 'package:respect/model/apply_form.dart';
+import 'package:respect/model/form_field_template.dart';
 import 'package:respect/utils/form_builder.dart';
 import '../constants.dart';
 
@@ -45,16 +45,33 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
     }
   }
 
-  Future<void> _makeForm() async {
+  Future<void> _makeForm(List<FormFieldTemplate> fieldList) async {
     final deviceId = await getDeviceId();
+
     await formsRef.doc('${deviceId}_$name').set(
           ApplyForm(
             deviceId: deviceId ?? 'No Id',
             createAt: DateTime.now(),
-            link: '',
+            //TODO: 스프레드시트 링크 추가
+            link: '스프레드시트 링크',
             name: name,
           ),
         );
+
+    for (FormFieldTemplate field in fieldList) {
+      await formsRef.doc('${deviceId}_$name').collection('formFields').add({
+        'index': fieldList.indexOf(field).toString(),
+        'type': field.type.convertToString,
+        'title': field.title,
+        'shortText': (field.type == FormFieldType.short) ? field.shortText : '',
+        'longText': (field.type == FormFieldType.long) ? field.longText : '',
+        'options': (field.type == FormFieldType.multiple) ? field.options : '',
+        'selectedOption': '',
+        'checkBoxes':
+            (field.type == FormFieldType.checkBox) ? field.checkBoxes : '',
+        'selectedBoxes': [],
+      });
+    }
   }
 
   final _formKey = GlobalKey<FormState>();
@@ -272,7 +289,7 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
 
                     _nameTextFieldFocusNode.requestFocus();
                   } else {
-                    _makeForm();
+                    _makeForm(formBuilder.formFieldList);
                     Navigator.pop(context);
                     widget.onDismiss();
                   }

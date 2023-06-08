@@ -24,6 +24,7 @@ extension FormFieldTypeExtension on FormFieldType {
 
 class FormFieldTemplate {
   FormFieldTemplate({
+    this.index = 0,
     this.type = FormFieldType.short,
     this.title = '',
     this.shortText = '',
@@ -34,6 +35,7 @@ class FormFieldTemplate {
     this.selectedBoxes = const [],
   });
 
+  int index;
   FormFieldType type;
   String title;
   String shortText;
