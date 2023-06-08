@@ -217,51 +217,54 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                         )
                       ],
                     ),
-                    const SizedBox(height: 16.0),
                     if (widget.event.dueDate != null)
-                      Row(
-                        children: [
-                          const SizedBox(
-                            width: 70,
-                            child: Text(
-                              '신청기한',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF7A7A7A),
-                                fontFamily: 'Pretendard',
-                              ),
-                            ),
-                          ),
-                          Text(
-                            DateFormat('yyyy.MM.dd').format(
-                              (widget.event.dueDate ?? DateTime.now()),
-                            ),
-                            style: const TextStyle(
+                      const SizedBox(height: 16.0),
+                    Row(
+                      children: [
+                        const SizedBox(
+                          width: 70,
+                          child: Text(
+                            '신청기한',
+                            style: TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w500,
                               color: Color(0xFF7A7A7A),
                               fontFamily: 'Pretendard',
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                        Text(
+                          DateFormat('yyyy.MM.dd').format(
+                            (widget.event.dueDate ?? DateTime.now()),
+                          ),
+                          style: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: Color(0xFF7A7A7A),
+                            fontFamily: 'Pretendard',
+                          ),
+                        ),
+                      ],
+                    ),
                     if (widget.event.account != null)
-                      Row(
-                        children: [
-                          const SizedBox(
-                            width: 70,
-                            child: Text(
-                              '계좌 번호',
-                              style: TextStyle(
-                                fontSize: 15,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF7A7A7A),
-                                fontFamily: 'Pretendard',
-                              ),
+                      const SizedBox(height: 16.0),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(
+                          width: 70,
+                          child: Text(
+                            '계좌 번호',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w500,
+                              color: Color(0xFF7A7A7A),
+                              fontFamily: 'Pretendard',
                             ),
                           ),
-                          Text(
+                        ),
+                        Expanded(
+                          child: Text(
                             widget.event.account ?? '??',
                             style: const TextStyle(
                               fontSize: 15,
@@ -270,8 +273,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                               fontFamily: 'Pretendard',
                             ),
                           ),
-                        ],
-                      ),
+                        )
+                      ],
+                    ),
                   ],
                 ),
               ),
@@ -346,7 +350,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             ],
           ),
         ),
-        if (isLoading == true)
+        if (isLoading)
           Center(
             child: Container(
               color: Colors.black.withOpacity(0.7),

@@ -1,15 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:respect/model/apply_form.dart';
 
 import '../screen/form_detail_screen.dart';
 
 class FormCard extends StatelessWidget {
-  const FormCard({super.key, required this.applyForm});
+  const FormCard(
+      {super.key, required this.isResultView, required this.applyForm});
 
   final ApplyForm applyForm;
+  final bool isResultView;
 
   @override
   Widget build(BuildContext context) {
@@ -63,28 +64,17 @@ class FormCard extends StatelessWidget {
                 fontFamily: 'Pretendard',
               ),
             ),
-            Row(
-              children: [
-                const Spacer(),
-                CupertinoButton(
-                    padding: const EdgeInsets.all(0.0),
-                    child: const Icon(
-                      Icons.content_copy_rounded,
-                      color: Color(0xFFAEAEB2),
-                      size: 24.0,
-                    ),
-                    onPressed: () {
-                      Clipboard.setData(ClipboardData(text: applyForm.link));
-                    })
-              ],
-            )
           ],
         ),
         onPressed: () {
-          Navigator.pushNamed(
-            context,
-            FormDetailScreen.routeName,
-          );
+          if (isResultView) {
+            print('결과 창');
+          } else {
+            Navigator.pushNamed(
+              context,
+              FormDetailScreen.routeName,
+            );
+          }
         },
       ),
     );

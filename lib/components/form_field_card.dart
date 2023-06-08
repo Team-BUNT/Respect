@@ -8,10 +8,11 @@ import 'filter_menu_chip.dart';
 
 class FormFieldCard extends StatefulWidget {
   const FormFieldCard(
-      {super.key, required this.fieldIndex, required this.formFieldTemplate});
+      {super.key, required this.isEditingMode, required this.fieldIndex, required this.formFieldTemplate});
 
   final int fieldIndex;
   final FormFieldTemplate formFieldTemplate;
+  final bool isEditingMode;
 
   @override
   State<FormFieldCard> createState() => _FormFieldCardState();
@@ -84,7 +85,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
       },
       child: Column(
         children: [
-          const SizedBox(height: 34.0),
+          const SizedBox(height: 12.0),
           Row(
             children: [
               Text(
@@ -130,29 +131,25 @@ class _FormFieldCardState extends State<FormFieldCard> {
                       }
                       if (type == FormFieldType.multiple) {
                         setState(() {
-                          options = ['옵션 1', '옵션 2'];
-                          selectedOption = '옵션 1';
+                          options = ['옵션 1'];
+                          selectedOption = '';
                           multipleControllers = [
                             TextEditingController(),
-                            TextEditingController()
                           ];
-                          multipleControllers[0].text = '옵션 1';
-                          multipleControllers[1].text = '옵션 2';
+                          multipleControllers[0].text = '';
                         });
-                        formField.options = ['옵션 1', '옵션 2'];
+                        formField.options = ['옵션 1'];
                       }
                       if (type == FormFieldType.checkBox) {
                         setState(() {
-                          checkBoxes = ['옵션 1', '옵션 2'];
+                          checkBoxes = ['옵션 1'];
                           formField.selectedBoxes = [];
                           checkBoxesControllers = [
                             TextEditingController(),
-                            TextEditingController()
                           ];
-                          checkBoxesControllers[0].text = '옵션 1';
-                          checkBoxesControllers[1].text = '옵션 2';
+                          checkBoxesControllers[0].text = '';
                         });
-                        formField.checkBoxes = ['옵션 1', '옵션 2'];
+                        formField.checkBoxes = ['옵션 1'];
                       }
                     },
                     title: type.convertToString,
@@ -296,7 +293,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
                               multipleControllers[controllerIndex],
                           cursorColor: Colors.black,
                           decoration: InputDecoration(
-                              hintText: option,
+                              hintText: '옵션 ${controllerIndex + 1}',
                               hintMaxLines: 1,
                               hintStyle: const TextStyle(
                                 fontSize: 15,
@@ -329,6 +326,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
                       );
                     }).toList(),
                   ),
+                  if (widget.isEditingMode)
                   RadioListTile(
                     value: null,
                     groupValue: context
@@ -368,14 +366,14 @@ class _FormFieldCardState extends State<FormFieldCard> {
                 children: [
                   Column(
                     children: checkBoxes.map((option) {
-                      final controllerIndex = options.indexOf(option);
+                      final controllerIndex = checkBoxes.indexOf(option);
                       return ListTile(
                         title: TextField(
                           controller:
                               checkBoxesControllers[controllerIndex],
                           cursorColor: Colors.black,
                           decoration: InputDecoration(
-                              hintText: option,
+                              hintText: '옵션 ${controllerIndex + 1}',
                               hintMaxLines: 1,
                               hintStyle: const TextStyle(
                                 fontSize: 15,
@@ -420,6 +418,7 @@ class _FormFieldCardState extends State<FormFieldCard> {
                       );
                     }).toList(),
                   ),
+                  if (widget.isEditingMode)
                   CupertinoButton(
                     padding: const EdgeInsets.all(0.0),
                     child: ListTile(
@@ -448,7 +447,8 @@ class _FormFieldCardState extends State<FormFieldCard> {
                   ),
                 ],
               ),
-            )
+            ),
+            const SizedBox(height: 24),
         ],
       ),
     );

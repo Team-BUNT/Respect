@@ -20,7 +20,10 @@ class MyFormsScreen extends StatefulWidget {
   State<MyFormsScreen> createState() => _MyFormsScreenState();
 }
 
-class _MyFormsScreenState extends State<MyFormsScreen> {
+class _MyFormsScreenState extends State<MyFormsScreen>
+    with SingleTickerProviderStateMixin {
+  late final TabController tabController;
+
   Future<String?> getDeviceId() async {
     var deviceInfo = DeviceInfoPlugin();
     const androidIdPlugin = AndroidId();
@@ -35,10 +38,16 @@ class _MyFormsScreenState extends State<MyFormsScreen> {
     }
   }
 
+  bool isLoading = false;
+
   Future getMyForms() async {
     List<ApplyForm> tempList = [];
 
     final deviceId = await getDeviceId();
+
+    setState(() {
+      isLoading = true;
+    });
     await FirebaseFirestore.instance
         .collection('forms')
         .where('deviceId', isEqualTo: deviceId)
@@ -66,6 +75,9 @@ class _MyFormsScreenState extends State<MyFormsScreen> {
         }
       },
     );
+    setState(() {
+      isLoading = false;
+    });
   }
 
   List<ApplyForm> myFormList = [];
@@ -73,60 +85,71 @@ class _MyFormsScreenState extends State<MyFormsScreen> {
   @override
   void initState() {
     getMyForms();
+    tabController = TabController(
+      length: 2,
+      vsync: this,
+      // animationDuration: Duration.zero,
+    );
 
     super.initState();
   }
 
   @override
+  void dispose() {
+    tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          '나의 신청폼',
-          style: navTextStyle,
-        ),
-        foregroundColor: Colors.black,
-        backgroundColor: Colors.white,
-        elevation: 0.1,
-        actions: [
-          CupertinoButton(
-            padding: const EdgeInsets.all(0.0),
-            child: const Icon(
-              CupertinoIcons.add,
-              size: 22.0,
-              color: Colors.black,
+    return Stack(
+      children: [
+        Scaffold(
+          appBar: AppBar(
+            title: Text(
+              '나의 신청폼',
+              style: navTextStyle,
             ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => MakeFormScreen(onDismiss: getMyForms),
+            foregroundColor: Colors.black,
+            backgroundColor: Colors.white,
+            elevation: 0.1,
+            actions: [
+              CupertinoButton(
+                padding: const EdgeInsets.all(0.0),
+                child: const Icon(
+                  CupertinoIcons.add,
+                  size: 22.0,
+                  color: Colors.black,
                 ),
-              );
-            },
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          MakeFormScreen(onDismiss: getMyForms),
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
-        ],
-      ),
-      backgroundColor: Colors.white,
-      body: RefreshIndicator(
-        color: Colors.black,
-        displacement: 10.0,
-        strokeWidth: 2.0,
-        onRefresh: () async {
-          await getMyForms();
-          setState(() {});
-        },
-        child: ListView(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  const Row(
+          backgroundColor: Colors.white,
+          body: RefreshIndicator(
+            color: Colors.black,
+            displacement: 10.0,
+            strokeWidth: 2.0,
+            onRefresh: () async {
+              await getMyForms();
+              setState(() {});
+            },
+            child: Column(
+              children: [
+                if (myFormList.isEmpty)
+                  Row(
                     children: [
                       Text(
-                        '혹시나 하는 안내사항 부분 입니다.',
-                        style: TextStyle(
+                        isLoading ? '신청폼을 불러오는 중입니다..' : '아직 작성한 신청폼이 없습니다.',
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w400,
                           color: Color(0xFF636366),
@@ -134,36 +157,100 @@ class _MyFormsScreenState extends State<MyFormsScreen> {
                         ),
                       ),
                     ],
-                  ),
-                  const SizedBox(height: 21.0),
-                  const Row(
-                    children: [
-                      Text(
-                        '나의 신청폼',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.black,
-                          fontFamily: 'Pretendard',
+                  )
+                else
+                  TabBar(
+                    controller: tabController,
+                    indicatorColor: Colors.black,
+                    tabs: [
+                      Tab(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12.0),
+                          child: Text(
+                            '나의 신청폼',
+                            style: tabController.index == 0
+                                ? selectedTabTextStyle
+                                : unselectedTabTextStyle,
+                          ),
+                        ),
+                      ),
+                      Tab(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 15.0),
+                          child: Text(
+                            '결과',
+                            style: tabController.index == 1
+                                ? selectedTabTextStyle
+                                : unselectedTabTextStyle,
+                          ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 16.0),
-                  StaggeredGrid.count(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 10.0,
-                    mainAxisSpacing: 10.0,
-                    children: myFormList.map((form) {
-                      return FormCard(applyForm: form);
-                    }).toList(),
-                  )
-                ],
-              ),
-            )
-          ],
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.70,
+                  child: TabBarView(
+                    controller: tabController,
+                    children: [
+                      ListView(
+                        shrinkWrap: true,
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 16.0),
+                                StaggeredGrid.count(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 10.0,
+                                  mainAxisSpacing: 10.0,
+                                  children: myFormList.map((form) {
+                                    return FormCard(
+                                      isResultView: false,
+                                      applyForm: form,
+                                    );
+                                  }).toList(),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      // 결과
+                      ListView(
+                        shrinkWrap: true,
+                        children: [
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 16.0),
+                                StaggeredGrid.count(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 10.0,
+                                  mainAxisSpacing: 10.0,
+                                  children: myFormList.map((form) {
+                                    return FormCard(
+                                      isResultView: true,
+                                      applyForm: form,
+                                    );
+                                  }).toList(),
+                                )
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 }

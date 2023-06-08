@@ -28,9 +28,9 @@ class FormFieldTemplate {
     this.title = '',
     this.shortText = '',
     this.longText = '',
-    this.options = const ['옵션 1', '옵션 2'],
-    this.selectedOption = '옵션 1',
-    this.checkBoxes = const ['옵션 1', '옵션 2'],
+    this.options = const ['옵션 1'],
+    this.selectedOption = '',
+    this.checkBoxes = const ['옵션 1'],
     this.selectedBoxes = const [],
   });
 

@@ -199,6 +199,8 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
                             return null;
                           },
                         ),
+                        const SizedBox(height: 20),
+                        const Divider(),
                         formBuilder.formFieldList.isNotEmpty
                             ? ListView.builder(
                                 physics: const NeverScrollableScrollPhysics(),
@@ -207,6 +209,7 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
                                 itemBuilder: (context, index) {
                                   return FormFieldCard(
                                     key: UniqueKey(),
+                                    isEditingMode: true,
                                     fieldIndex: index,
                                     formFieldTemplate:
                                         formBuilder.formFieldList[index],
