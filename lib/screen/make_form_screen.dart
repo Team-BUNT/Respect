@@ -11,6 +11,12 @@ import 'package:respect/model/apply_form.dart';
 import 'package:respect/model/form_field_template.dart';
 import 'package:respect/utils/form_builder.dart';
 import '../constants.dart';
+import 'package:googleapis_auth/auth_io.dart';
+import 'package:googleapis/sheets/v4.dart' as v4;
+import 'package:googleapis/drive/v3.dart' as v3;
+import 'package:gsheets/gsheets.dart';
+import 'package:flutter/services.dart';
+import 'dart:convert';
 
 class MakeFormScreen extends StatefulWidget {
   const MakeFormScreen({super.key, required this.onDismiss});
@@ -45,6 +51,48 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
     }
   }
 
+  Future<ServiceAccountCredentials> _loadCredentials() async {
+    final String contents = await rootBundle
+        .loadString('asset/respectspreadsheets-3ee3356d76a2.json');
+    final Map<String, dynamic> jsonContents = jsonDecode(contents);
+    return ServiceAccountCredentials.fromJson(jsonContents);
+  }
+
+  Future<String> makeFormLink(String sheetName) async {
+    String formLink;
+
+    const scopes = [
+      v4.SheetsApi.spreadsheetsScope,
+      'https://www.googleapis.com/auth/drive'
+    ];
+
+    final credentials = await _loadCredentials();
+    final client = await clientViaServiceAccount(credentials, scopes);
+    final sheets = v4.SheetsApi(client);
+    final drive = v3.DriveApi(client);
+
+    final request = v4.Spreadsheet();
+    request.properties = v4.SpreadsheetProperties();
+    request.properties!.title = sheetName;
+
+    final response = await sheets.spreadsheets.create(request);
+
+    try {
+      formLink =
+          'https://docs.google.com/spreadsheets/d/${response.spreadsheetId}';
+
+      final permission = v3.Permission()
+        ..type = "anyone"
+        ..role = "reader"; // or "writer", "commenter"
+      await drive.permissions.create(permission, response.spreadsheetId!);
+      print(formLink);
+    } catch (error) {
+      print("Error: $error");
+      formLink = "";
+    }
+    return formLink; //if link is invalid, return ""
+  }
+
   Future<void> _makeForm(List<FormFieldTemplate> fieldList) async {
     final deviceId = await getDeviceId();
 
@@ -53,7 +101,7 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
             deviceId: deviceId ?? 'No Id',
             createAt: DateTime.now(),
             //TODO: 스프레드시트 링크 추가
-            link: '스프레드시트 링크',
+            link: await makeFormLink(name), //TODO: check link is valid or not
             name: name,
           ),
         );
@@ -73,6 +121,7 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
       });
     }
   }
+  //makeform
 
   final _formKey = GlobalKey<FormState>();
   String name = '';
