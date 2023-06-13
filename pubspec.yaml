@@ -69,7 +69,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
   flutter_launcher_icons: ^0.13.1
-  # flutter_native_splash: ^2.3.0
+  flutter_native_splash: ^2.3.0
 
 flutter_launcher_icons:
   ios: true
@@ -77,11 +77,11 @@ flutter_launcher_icons:
   image_path: "asset/icons/appIcon.png"
   remove_alpha_ios: true
 
-# flutter_native_splash:
+flutter_native_splash:
 #   # flutter pub run flutter_native_splash:create
-#   color: "#000000"
+  color: "#000000"
 
-#   image: asset/icons/respectIcon.png
+  image: asset/icons/respectIcon.png
 
 
 
