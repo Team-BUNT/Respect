@@ -51,22 +51,18 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
     }
   }
 
-  Future<ServiceAccountCredentials> _loadCredentials() async {
-    final String contents = await rootBundle
-        .loadString('asset/respectspreadsheets-3ee3356d76a2.json');
+  ServiceAccountCredentials _loadCredentials(String contents) {
     final Map<String, dynamic> jsonContents = jsonDecode(contents);
     return ServiceAccountCredentials.fromJson(jsonContents);
   }
 
-  Future<String> makeFormLink(String sheetName) async {
-    String formLink;
-
+  Future<v4.Spreadsheet> makeSheet(String sheetName, String contents) async {
     const scopes = [
       v4.SheetsApi.spreadsheetsScope,
       'https://www.googleapis.com/auth/drive'
     ];
 
-    final credentials = await _loadCredentials();
+    final credentials = await _loadCredentials(contents);
     final client = await clientViaServiceAccount(credentials, scopes);
     final sheets = v4.SheetsApi(client);
     final drive = v3.DriveApi(client);
@@ -78,33 +74,39 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
     final response = await sheets.spreadsheets.create(request);
 
     try {
-      formLink =
-          'https://docs.google.com/spreadsheets/d/${response.spreadsheetId}';
-
       final permission = v3.Permission()
         ..type = "anyone"
         ..role = "reader"; // or "writer", "commenter"
       await drive.permissions.create(permission, response.spreadsheetId!);
-      print(formLink);
     } catch (error) {
       print("Error: $error");
-      formLink = "";
     }
-    return formLink; //if link is invalid, return ""
+    return response;
   }
 
   Future<void> _makeForm(List<FormFieldTemplate> fieldList) async {
     final deviceId = await getDeviceId();
+    final credentials = await rootBundle
+        .loadString('asset/respectspreadsheets-3ee3356d76a2.json');
+    final spreadSheet = await makeSheet(name, credentials);
 
     await formsRef.doc('${deviceId}_$name').set(
           ApplyForm(
             deviceId: deviceId ?? 'No Id',
             createAt: DateTime.now(),
             //TODO: 스프레드시트 링크 추가
-            link: await makeFormLink(name), //TODO: check link is valid or not
+            link:
+                'https://docs.google.com/spreadsheets/d/${spreadSheet.spreadsheetId}', //TODO: check link is valid or not
             name: name,
           ),
         );
+
+    final gsheets = GSheets(credentials);
+    final ss = await gsheets.spreadsheet(spreadSheet.spreadsheetId!);
+    var sheet = ss.worksheetByTitle('Sheet1');
+    sheet ??= await ss.addWorksheet('Sheet1');
+    print(
+        'https://docs.google.com/spreadsheets/d/${spreadSheet.spreadsheetId}');
 
     for (FormFieldTemplate field in fieldList) {
       await formsRef.doc('${deviceId}_$name').collection('formFields').add({
@@ -119,9 +121,10 @@ class _MakeFormScreenState extends State<MakeFormScreen> {
             (field.type == FormFieldType.checkBox) ? field.checkBoxes : [],
         'selectedBoxes': [],
       });
+      await sheet.values.insertValue(field.title,
+          column: fieldList.indexOf(field) + 1, row: 1);
     }
   }
-  //makeform
 
   final _formKey = GlobalKey<FormState>();
   String name = '';

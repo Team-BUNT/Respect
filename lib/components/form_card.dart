@@ -69,7 +69,7 @@ class FormCard extends StatelessWidget {
         onPressed: () async {
           //TODO: 구글 시트 링크 연결
           if (isResultView) {
-            final url = Uri.parse('https://www.naver.com');
+            final url = Uri.parse(applyForm.link);
 
             if (await canLaunchUrl(url)) {
               launchUrl(url);

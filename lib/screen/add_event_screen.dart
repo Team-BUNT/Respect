@@ -41,7 +41,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
   List<String> genre = ['올장르'];
   String? account;
   List<ApplyForm> myFormList = [];
-  late ApplyForm? selectedForm;
+  ApplyForm? selectedForm = ApplyForm(deviceId: '', name: '신청폼이 없습니다', createAt: DateTime.now(), link: '');
   String? detail;
   String? hostName;
   String? hostContact;

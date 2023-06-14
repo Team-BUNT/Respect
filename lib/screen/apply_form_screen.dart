@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:gsheets/gsheets.dart';
+import 'package:flutter/services.dart';
 import 'package:respect/components/apply_field_card.dart';
 import 'package:respect/model/form_field_template.dart';
 import '../constants.dart';
@@ -29,6 +31,7 @@ class _ApplyFormScreenState extends State<ApplyFormScreen> {
   bool isLoading = false;
   String title = '';
   List<FormFieldTemplate> fieldList = [];
+  late Worksheet worksheet;
 
   Future getApplyForms() async {
     setState(() {
@@ -88,6 +91,50 @@ class _ApplyFormScreenState extends State<ApplyFormScreen> {
     });
   }
 
+  Future<String> getSheetID() async {
+    late String link;
+    await FirebaseFirestore.instance
+        .collection('forms')
+        .doc(widget.args.applyFormDocument)
+        .get()
+        .then((snapshot) {
+      link = snapshot['link'];
+    });
+    Uri uri = Uri.parse(link);
+    String sheetID = uri.pathSegments.last;
+    return sheetID;
+  }
+
+  void getWorksheet() async {
+    final credentials = await rootBundle
+        .loadString('asset/respectspreadsheets-3ee3356d76a2.json');
+    final sheetID = await getSheetID();
+    final gsheets = GSheets(credentials);
+    final ss = await gsheets.spreadsheet(sheetID);
+    var sheet = ss.worksheetByTitle('Sheet1');
+    sheet ??= await ss.addWorksheet('Sheet1');
+    setState(() {
+      worksheet = sheet!;
+    });
+  }
+
+  void sendReply(List<FormFieldTemplate> fieldList, Worksheet sheet) async {
+    Map<String, dynamic> userReply = {};
+    for (FormFieldTemplate field in fieldList) {
+      switch (field.type) {
+        case FormFieldType.short:
+          userReply[field.title] = field.shortText;
+        case FormFieldType.long:
+          userReply[field.title] = field.longText;
+        case FormFieldType.checkBox:
+          userReply[field.title] = field.selectedBoxes.join();
+        case FormFieldType.multiple:
+          userReply[field.title] = field.selectedOption;
+      }
+    }
+    await sheet.values.map.appendRow(userReply);
+  }
+
   void _showAlert(BuildContext context) {
     showCupertinoDialog(
       context: context,
@@ -114,6 +161,7 @@ class _ApplyFormScreenState extends State<ApplyFormScreen> {
               child: const Text("확인"),
               onPressed: () {
                 //TODO: 스프레드시트 데이터 업로드
+                sendReply(fieldList, worksheet);
                 Navigator.pop(context);
                 Navigator.pop(context);
 
@@ -136,6 +184,7 @@ class _ApplyFormScreenState extends State<ApplyFormScreen> {
 
   @override
   void initState() {
+    getWorksheet();
     getApplyForms();
     super.initState();
   }
