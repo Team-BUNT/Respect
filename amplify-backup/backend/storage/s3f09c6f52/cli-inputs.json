@@ -1,0 +1,17 @@
+{
+  "resourceName": "s3f09c6f52",
+  "policyUUID": "f09c6f52",
+  "bucketName": "respect332e182126fd429eb476f3e164260ab7",
+  "storageAccess": "authAndGuest",
+  "guestAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "groupAccess": {}
+}

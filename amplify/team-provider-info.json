@@ -1,0 +1,44 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-respect-dev-135756-authRole",
+      "UnauthRoleArn": "arn:aws:iam::174271302160:role/amplify-respect-dev-135756-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::174271302160:role/amplify-respect-dev-135756-authRole",
+      "Region": "ap-northeast-2",
+      "DeploymentBucketName": "amplify-respect-dev-135756-deployment",
+      "UnauthRoleName": "amplify-respect-dev-135756-unauthRole",
+      "StackName": "amplify-respect-dev-135756",
+      "StackId": "arn:aws:cloudformation:ap-northeast-2:174271302160:stack/amplify-respect-dev-135756/e3fea8b0-0038-11ee-8d34-06a6c4ea713a",
+      "AmplifyAppId": "d18gt7w7fmcch9"
+    },
+    "categories": {
+      "auth": {
+        "respectecc581b0": {}
+      },
+      "storage": {
+        "s35ca1bc02": {}
+      }
+    }
+  },
+  "respect": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-respect-respect-62544-authRole",
+      "UnauthRoleArn": "arn:aws:iam::174271302160:role/amplify-respect-respect-62544-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::174271302160:role/amplify-respect-respect-62544-authRole",
+      "Region": "ap-northeast-2",
+      "DeploymentBucketName": "amplify-respect-respect-62544-deployment",
+      "UnauthRoleName": "amplify-respect-respect-62544-unauthRole",
+      "StackName": "amplify-respect-respect-62544",
+      "StackId": "arn:aws:cloudformation:ap-northeast-2:174271302160:stack/amplify-respect-respect-62544/34c2b8b0-fd9e-11ed-bb8e-02eac812db32",
+      "AmplifyAppId": "d297bzg4tfy7su"
+    },
+    "categories": {
+      "auth": {
+        "respectcf4ecd3a": {}
+      },
+      "storage": {
+        "s3f09c6f52": {}
+      }
+    }
+  }
+}
