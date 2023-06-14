@@ -206,6 +206,9 @@ class _MyFormsScreenState extends State<MyFormsScreen>
                         ),
                       ),
                     ],
+                    onTap: (_) {
+                      getMyForms();
+                    },
                   ),
                 SizedBox(
                   height: MediaQuery.of(context).size.height * 0.70,
