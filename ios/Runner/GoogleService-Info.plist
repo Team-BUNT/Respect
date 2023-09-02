@@ -3,21 +3,21 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>152521918382-584v3icfg6a4c7jc1mikpv07ukbba6u4.apps.googleusercontent.com</string>
+	<string>555827382125-nsn0ecr7tok6r5ivcttev7utam18e57e.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.152521918382-584v3icfg6a4c7jc1mikpv07ukbba6u4</string>
+	<string>com.googleusercontent.apps.555827382125-nsn0ecr7tok6r5ivcttev7utam18e57e</string>
 	<key>API_KEY</key>
-	<string>AIzaSyBVuogSqbKgEJgLRXwz6uj4uGT_CwG6M0c</string>
+	<string>AIzaSyDjMN6XK5yIbYD4I3YQbSD06X47JCobpXY</string>
 	<key>GCM_SENDER_ID</key>
-	<string>152521918382</string>
+	<string>555827382125</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.jio.RESPECT</string>
 	<key>PROJECT_ID</key>
-	<string>respect-f905e</string>
+	<string>respect-1f4e0</string>
 	<key>STORAGE_BUCKET</key>
-	<string>respect-f905e.appspot.com</string>
+	<string>respect-1f4e0.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:152521918382:ios:f9a990ebdc380b1bd3ea3f</string>
+	<string>1:555827382125:ios:9fd55adf50b9c41a887c64</string>
 </dict>
 </plist>

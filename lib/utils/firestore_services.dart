@@ -13,7 +13,7 @@ class FirestoreService {
     debugPrint("FIRESTORE: getAllDanceEventsBy");
     try {
       QuerySnapshot querySnapshot = await eventsRef.get();
-
+      debugPrint("FIRESTORE: ${querySnapshot.docs.length}");
       List<DanceEvent> danceEvents = [];
       for (QueryDocumentSnapshot docSnapshot in querySnapshot.docs) {
         Map<String, dynamic> danceEventMap =
