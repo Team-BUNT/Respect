@@ -64,7 +64,7 @@ class _EventScreenState extends State<EventScreen> {
       case 3:
         filteredEventList = filteredEventList
             .where(
-              (event) => event.type!.startsWith('경연'),
+              (event) => event.type!.startsWith('워크샵'),
             )
             .toList();
       case 4:

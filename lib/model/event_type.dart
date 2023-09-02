@@ -1,4 +1,4 @@
-enum EventType { all, battle, performance, contest, party, etc }
+enum EventType { all, battle, performance, workshop, party, etc }
 
 extension EventTypeExtension on EventType {
   String get convertToString {
@@ -9,11 +9,11 @@ extension EventTypeExtension on EventType {
         return '배틀';
       case EventType.performance:
         return '퍼포먼스';
-      case EventType.contest:
-        return '경연';
+      case EventType.workshop:
+        return '워크샵';
       case EventType.party:
         return '파티';
-        case EventType.etc:
+      case EventType.etc:
         return '기타';
       default:
         return "";

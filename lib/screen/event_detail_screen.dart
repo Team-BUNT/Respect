@@ -353,31 +353,31 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     ),
                     const SizedBox(height: 120.0),
                     //TODO: Apply Button
-                    if (widget.event.entryLink != null ||
-                        widget.event.entryLink != null)
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: CupertinoButton(
-                          color: Colors.black,
-                          padding: const EdgeInsets.all(20.0),
-                          onPressed: () async {
-                            final url = Uri.parse(widget.event.entryLink!);
+                    // if (widget.event.entryLink != null ||
+                    //     widget.event.entryLink != null)
+                    //   Padding(
+                    //     padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    //     child: CupertinoButton(
+                    //       color: Colors.black,
+                    //       padding: const EdgeInsets.all(20.0),
+                    //       onPressed: () async {
+                    //         final url = Uri.parse(widget.event.entryLink!);
 
-                            if (await canLaunchUrl(url)) {
-                              launchUrl(url);
-                            }
-                          },
-                          child: const Text(
-                            '신청하기',
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFFFFFFFF),
-                              fontFamily: 'Pretendard',
-                            ),
-                          ),
-                        ),
-                      )
+                    //         if (await canLaunchUrl(url)) {
+                    //           launchUrl(url);
+                    //         }
+                    //       },
+                    //       child: const Text(
+                    //         '신청하기',
+                    //         style: TextStyle(
+                    //           fontSize: 17,
+                    //           fontWeight: FontWeight.w600,
+                    //           color: Color(0xFFFFFFFF),
+                    //           fontFamily: 'Pretendard',
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   )
                   ],
                 ),
               ),
@@ -393,7 +393,20 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   child: CupertinoButton(
                     padding: const EdgeInsets.only(
                         left: 12, right: 12, bottom: 40, top: 12),
-                    onPressed: () {},
+                    onPressed: () async {
+                      if (widget.event.entryLink != null) {
+                        debugPrint("구글 폼 링크 오픈");
+                        final url = Uri.parse(widget.event.entryLink!);
+                        if (await canLaunchUrl(url)) {
+                          launchUrl(url);
+                        }
+                      } else {
+                        //TODO - 행사 접수 페이지로 이동
+                        debugPrint("행사 접수 페이지 이동");
+
+                        //TODO - 행사가 RESPECT HOST  에서 만들어졌는지 로직 추가 필요
+                      }
+                    },
                     child: Container(
                       height: 60.0,
                       decoration: BoxDecoration(

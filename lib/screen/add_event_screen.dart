@@ -91,42 +91,42 @@ class _AddEventScreenState extends State<AddEventScreen> {
     }
   }
 
-  Future getMyForms() async {
-    List<ApplyForm> tempList = [];
+  // Future getMyForms() async {
+  //   List<ApplyForm> tempList = [];
 
-    final deviceId = await getDeviceId();
-    await db
-        .collection('forms')
-        .where('deviceId', isEqualTo: deviceId)
-        .orderBy('createAt')
-        .get()
-        .then(
-      (snapshot) {
-        for (var doc in snapshot.docs) {
-          var document = doc.data();
-          String deviceId = document['deviceId'];
-          String name = document['name'];
-          DateTime createAt = (document['createAt'] as Timestamp).toDate();
-          String link = document['link'];
+  //   final deviceId = await getDeviceId();
+  //   await db
+  //       .collection('forms')
+  //       .where('deviceId', isEqualTo: deviceId)
+  //       .orderBy('createAt')
+  //       .get()
+  //       .then(
+  //     (snapshot) {
+  //       for (var doc in snapshot.docs) {
+  //         var document = doc.data();
+  //         String deviceId = document['deviceId'];
+  //         String name = document['name'];
+  //         DateTime createAt = (document['createAt'] as Timestamp).toDate();
+  //         String link = document['link'];
 
-          ApplyForm form = ApplyForm(
-            deviceId: deviceId,
-            name: name,
-            createAt: createAt,
-            link: link,
-          );
-          tempList.add(form);
-          setState(() {
-            myFormList = tempList;
-          });
-        }
-      },
-    );
+  //         ApplyForm form = ApplyForm(
+  //           deviceId: deviceId,
+  //           name: name,
+  //           createAt: createAt,
+  //           link: link,
+  //         );
+  //         tempList.add(form);
+  //         setState(() {
+  //           myFormList = tempList;
+  //         });
+  //       }
+  //     },
+  //   );
 
-    // setState(() {
-    //   selectedForm = myFormList.first;
-    // });
-  }
+  //   // setState(() {
+  //   //   selectedForm = myFormList.first;
+  //   // });
+  // }
 
   void _showActionSheet(BuildContext context) {
     showCupertinoModalPopup<void>(
@@ -279,7 +279,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
   @override
   void initState() {
-    getMyForms();
+    // getMyForms();
 
     super.initState();
   }
