@@ -6,11 +6,11 @@ import 'package:respect/components/event_card.dart';
 import 'package:respect/components/respect_app_bar.dart';
 import 'package:respect/model/event_genre.dart';
 import 'package:respect/screen/event_detail_screen.dart';
+import 'package:respect/utils/firestore_services.dart';
 import '../components/filter_menu_chip.dart';
 import '../constants.dart';
 import '../model/event.dart';
 import '../model/province.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class EventScreen extends StatefulWidget {
   static String routeName = '/';
@@ -28,67 +28,73 @@ class _EventScreenState extends State<EventScreen> {
   Province selectedProvince = Province.all;
   EventGenre selectedGenre = EventGenre.all;
 
-  List<Event> eventList = [];
-  List<Event> filteredEventList = [];
+  List<DanceEvent> eventList = [];
+  List<DanceEvent> filteredEventList = [];
 
   Future getEvents() async {
-    await FirebaseFirestore.instance
-        .collection('events')
-        .where('isShowing', isEqualTo: true)
-        .where('date', isGreaterThanOrEqualTo: DateTime.now())
-        .orderBy('date')
-        .get()
-        .then(
-      (snapshot) {
-        for (var doc in snapshot.docs) {
-          var document = doc.data();
-          String id = document['id'];
-          String? thumbnail = document['thumbnail'];
-          String posterURL = document['posterURL'];
-          String name = document['name'];
-          String province = document['province'];
-          String location = document['location'];
-          DateTime date = (document['date'] as Timestamp).toDate();
-          DateTime? dueDate = ((document['dueDate'] == null)
-              ? null
-              : (document['dueDate'] as Timestamp).toDate());
-          String type = document['type'];
-          List<String> genre = List<String>.from(document['genre']);
-          String? account = document['account'];
-          String? form = document['form'];
-          String? link = document['link'];
-          String? detail = document['detail'];
-          String? hostName = document['hostName'];
-          String? hostContact = document['hostContact'];
-          bool? isShowing = document['isShowing'];
-
-          Event event = Event(
-            id: id,
-            thumbnail: thumbnail,
-            posterURL: posterURL,
-            name: name,
-            province: province,
-            location: location,
-            date: date,
-            dueDate: dueDate,
-            type: type,
-            genre: genre,
-            account: account,
-            form: form,
-            link: link,
-            detail: detail,
-            hostName: hostName,
-            hostContact: hostContact,
-            isShowing: isShowing,
-          );
-          eventList.add(event);
-          setState(() {
-            filteredEventList = eventList;
-          });
-        }
-      },
-    );
+    eventList = await FirestoreService.getAllDanceEvents();
+    debugPrint("DEBUG: getEvents $eventList");
+    setState(() {});
   }
+
+  // Future getEvents() async {
+  //   await FirebaseFirestore.instance
+  //       .collection('events')
+  //       .where('isShowing', isEqualTo: true)
+  //       .where('date', isGreaterThanOrEqualTo: DateTime.now())
+  //       .orderBy('date')
+  //       .get()
+  //       .then(
+  //     (snapshot) {
+  //       for (var doc in snapshot.docs) {
+  //         var document = doc.data();
+  //         String id = document['id'];
+  //         // String? thumbnail = document['thumbnail'];
+  //         String posterURL = document['posterURL'];
+  //         String title = document['title'];
+  //         String province = document['province'];
+  //         String location = document['location'];
+  //         DateTime date = (document['date'] as Timestamp).toDate();
+  //         DateTime? dueDate = ((document['dueDate'] == null)
+  //             ? null
+  //             : (document['dueDate'] as Timestamp).toDate());
+  //         String type = document['type'];
+  //         List<String> genre = List<String>.from(document['genre']);
+  //         String? account = document['account'];
+  //         String? form = document['form'];
+  //         String? link = document['link'];
+  //         String? detail = document['detail'];
+  //         String? hostName = document['hostName'];
+  //         String? hostContact = document['hostContact'];
+  //         bool? isShowing = document['isShowing'];
+
+  //         DanceEvent event = DanceEvent(
+  //           id: id,
+  //           // : thumbnail,
+  //           posterURL: posterURL,
+  //           title: title,
+  //           province: province,
+  //           location: location,
+  //           date: date,
+  //           c: dueDate,
+  //           type: type,
+  //           genres: genres,
+  //           account: account,
+  //           // form: form,
+  //           entryLink: link,
+  //           detail: detail,
+  //           hostName: hostName,
+  //           hostContact: hostContact,
+  //           isShowing: isShowing,
+  //         );
+  //         eventList.add(event);
+  //         setState(() {
+  //           filteredEventList = eventList;
+  //         });
+  //       }
+  //     },
+  //   );
+  // }
 
   void filterEvent() {
     filteredEventList = eventList;
@@ -97,31 +103,31 @@ class _EventScreenState extends State<EventScreen> {
       case 1:
         filteredEventList = filteredEventList
             .where(
-              (event) => event.type.startsWith('배틀'),
+              (event) => event.type!.startsWith('배틀'),
             )
             .toList();
       case 2:
         filteredEventList = filteredEventList
             .where(
-              (event) => event.type.startsWith('퍼포먼스'),
+              (event) => event.type!.startsWith('퍼포먼스'),
             )
             .toList();
       case 3:
         filteredEventList = filteredEventList
             .where(
-              (event) => event.type.startsWith('경연'),
+              (event) => event.type!.startsWith('경연'),
             )
             .toList();
       case 4:
         filteredEventList = filteredEventList
             .where(
-              (event) => event.type.startsWith('파티'),
+              (event) => event.type!.startsWith('파티'),
             )
             .toList();
       case 5:
         filteredEventList = filteredEventList
             .where(
-              (event) => event.type.startsWith('기타'),
+              (event) => event.type!.startsWith('기타'),
             )
             .toList();
     }
@@ -130,7 +136,7 @@ class _EventScreenState extends State<EventScreen> {
       filteredEventList = filteredEventList
           .where(
             (event) =>
-                event.province.startsWith(selectedProvince.convertToString),
+                event.provinance!.startsWith(selectedProvince.convertToString),
           )
           .toList();
     }
@@ -138,7 +144,7 @@ class _EventScreenState extends State<EventScreen> {
     if (selectedGenre != EventGenre.all) {
       filteredEventList = filteredEventList
           .where(
-            (event) => event.genre.contains(selectedGenre.convertToString),
+            (event) => event.genres!.contains(selectedGenre.convertToString),
           )
           .toList();
     }
@@ -184,7 +190,8 @@ class _EventScreenState extends State<EventScreen> {
                   child: Row(
                     children: [
                       PullDownButton(
-                        itemBuilder: (context) => Province.values.map((province) {
+                        itemBuilder: (context) =>
+                            Province.values.map((province) {
                           return PullDownMenuItem.selectable(
                             onTap: () {
                               setState(() {
@@ -207,7 +214,8 @@ class _EventScreenState extends State<EventScreen> {
                         width: 12.0,
                       ),
                       PullDownButton(
-                        itemBuilder: (context) => EventGenre.values.map((genre) {
+                        itemBuilder: (context) =>
+                            EventGenre.values.map((genre) {
                           return PullDownMenuItem.selectable(
                             onTap: () {
                               setState(() {

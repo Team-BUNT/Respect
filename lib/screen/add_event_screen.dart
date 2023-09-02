@@ -41,7 +41,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
   List<String> genre = ['올장르'];
   String? account;
   List<ApplyForm> myFormList = [];
-  ApplyForm? selectedForm = ApplyForm(deviceId: '', name: '신청폼이 없습니다', createAt: DateTime.now(), link: '');
+  ApplyForm? selectedForm = ApplyForm(
+      deviceId: '', name: '신청폼이 없습니다', createAt: DateTime.now(), link: '');
   String? detail;
   String? hostName;
   String? hostContact;
@@ -71,9 +72,9 @@ class _AddEventScreenState extends State<AddEventScreen> {
   final db = FirebaseFirestore.instance;
   final eventsRef = FirebaseFirestore.instance
       .collection('events')
-      .withConverter<Event>(
-        fromFirestore: (snapshot, _) => Event.fromFirestore(snapshot.data()!),
-        toFirestore: (event, _) => event.toFirestore(),
+      .withConverter<DanceEvent>(
+        fromFirestore: (snapshot, _) => DanceEvent.fromJson(snapshot.data()!),
+        toFirestore: (event, _) => event.toJson(),
       );
 
   Future<String?> getDeviceId() async {
@@ -122,9 +123,9 @@ class _AddEventScreenState extends State<AddEventScreen> {
       },
     );
 
-    setState(() {
-      selectedForm = myFormList.first;
-    });
+    // setState(() {
+    //   selectedForm = myFormList.first;
+    // });
   }
 
   void _showActionSheet(BuildContext context) {
@@ -223,19 +224,20 @@ class _AddEventScreenState extends State<AddEventScreen> {
     final form = '${deviceId}_${selectedForm?.name}';
 
     await eventsRef.add(
-      Event(
+      DanceEvent(
+        createdAt: DateTime.now(),
         id: id,
-        thumbnail: thumbnail,
+        // thumbnail: thumbnail,
         posterURL: posterURL,
-        name: name ?? '??',
-        province: province.convertToString,
-        location: location ?? '??',
+        title: name ?? '??',
+        provinance: province.convertToString,
+        place: location ?? '??',
         date: date.first ?? DateTime.now(),
-        dueDate: dueDate?.first ?? DateTime.now(),
+        ticketCloseDate: dueDate?.first ?? DateTime.now(),
         type: eventType.convertToString,
-        genre: genre,
+        genres: genre,
         account: account,
-        form: form,
+        // form: form,
         detail: detail,
         hostName: hostName,
         hostContact: hostContact,
@@ -1160,7 +1162,9 @@ class _AddEventScreenState extends State<AddEventScreen> {
                             child: Row(
                               children: [
                                 Text(
-                                  (selectedForm != null) ? '${(myFormList.indexOf(selectedForm!) + 1).toString().padLeft(2, '0')} ${selectedForm!.name}' : '',
+                                  (selectedForm != null)
+                                      ? '${(myFormList.indexOf(selectedForm!) + 1).toString().padLeft(2, '0')} ${selectedForm!.name}'
+                                      : '',
                                   style: const TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w500,

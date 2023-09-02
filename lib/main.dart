@@ -19,6 +19,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp(
+    name: "hypetown",
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
@@ -66,7 +67,7 @@ class RespectApp extends StatelessWidget {
       onGenerateRoute: (settings) {
         switch (settings.name) {
           case '/event_detail_screen':
-            final arguments = settings.arguments as Event;
+            final arguments = settings.arguments as DanceEvent;
 
             return MaterialPageRoute(
               builder: (context) => EventDetailScreen(

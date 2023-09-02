@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:respect/constants.dart';
-import 'package:respect/screen/apply_form_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -20,7 +19,7 @@ class EventDetailScreen extends StatefulWidget {
 
   static String routeName = '/event_detail_screen';
 
-  final Event event;
+  final DanceEvent event;
 
   @override
   State<EventDetailScreen> createState() => _EventDetailScreenState();
@@ -49,7 +48,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           body: ListView(
             children: [
               Stack(children: [
-                Image.network(widget.event.posterURL),
+                Image.network(widget.event.posterURL ?? ""),
                 Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: Container(
@@ -60,7 +59,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                         shape: BoxShape.rectangle,
                         borderRadius: BorderRadius.circular(6.0)),
                     child: Text(
-                      'D-${int.parse(widget.event.date.difference(DateTime.now()).inDays.toString())}',
+                      'D-${int.parse(widget.event.date?.difference(DateTime.now()).inDays.toString() ?? "")}',
                       style: const TextStyle(
                         fontSize: 16.0,
                         fontWeight: FontWeight.w400,
@@ -77,7 +76,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   children: [
                     Chip(
                       label: Text(
-                        widget.event.type,
+                        widget.event.type ?? "타입",
                         style: eventDetailTypeTextStyle,
                       ),
                       labelPadding:
@@ -93,11 +92,11 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     ),
                     Wrap(
                       spacing: 8,
-                      children:
-                          List.generate(widget.event.genre.length, (index) {
+                      children: List.generate(widget.event.genres?.length ?? 0,
+                          (index) {
                         return Chip(
                           label: Text(
-                            widget.event.genre[index],
+                            widget.event.genres?[index] ?? "",
                             style: eventDetailGenreTextStyle,
                           ),
                           labelPadding:
@@ -123,8 +122,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                           isLoading = true;
                         });
 
-                        final response = await http.get(Uri.parse(
-                            widget.event.thumbnail ?? widget.event.posterURL));
+                        final response = await http
+                            .get(Uri.parse(widget.event.posterURL ?? ""));
                         final tempDir = await getTemporaryDirectory();
                         File file =
                             await File('${tempDir.path}/image.png').create();
@@ -132,7 +131,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
 
                         await kakaotalkSharingUtil.shareToKakaotalk(
                           image: file,
-                          name: widget.event.name,
+                          name: widget.event.title ?? "",
                         );
                         setState(() {
                           isLoading = false;
@@ -149,7 +148,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   shrinkWrap: true,
                   children: [
                     Text(
-                      widget.event.name,
+                      widget.event.title ?? "행사 명",
                       style: eventDetailNameTextStyle,
                     ),
                     const SizedBox(
@@ -157,7 +156,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     ),
                     Text(
                       DateFormat('yyyy.MM.dd').format(
-                        widget.event.date,
+                        widget.event.date!,
                       ),
                       style: eventDetailDateTextStyle,
                     ),
@@ -206,7 +205,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                         ),
                         Flexible(
                           child: Text(
-                            widget.event.location,
+                            widget.event.place ?? "장소 미정",
                             style: const TextStyle(
                               fontSize: 15,
                               fontWeight: FontWeight.w400,
@@ -217,7 +216,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                         )
                       ],
                     ),
-                    if (widget.event.dueDate != null)
+                    if (widget.event.ticketCloseDate != null)
                       const SizedBox(height: 16.0),
                     Row(
                       children: [
@@ -235,7 +234,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                         ),
                         Text(
                           DateFormat('yyyy.MM.dd').format(
-                            (widget.event.dueDate ?? DateTime.now()),
+                            (widget.event.ticketCloseDate ?? DateTime.now()),
                           ),
                           style: const TextStyle(
                             fontSize: 15,
@@ -322,27 +321,17 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   ),
                 ),
               const SizedBox(height: 36),
-              if (widget.event.link != null || widget.event.form != null)
+              if (widget.event.entryLink !=
+                  null) // TODO - HOST에서 개설한 행사의 경우 -> 행사 접수 화면으로
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: CupertinoButton(
                     color: Colors.black,
                     padding: const EdgeInsets.all(20.0),
                     onPressed: () async {
-                      if (widget.event.form != null) {
-                        Navigator.pushNamed(
-                          context,
-                          ApplyFormScreen.routeName,
-                          arguments: ApplyFormScreenArguments(
-                              isAdmin: false,
-                              applyFormDocument: widget.event.form ?? ''),
-                        );
-                      } else {
-                        final url = Uri.parse(widget.event.link!);
-
-                        if (await canLaunchUrl(url)) {
-                          launchUrl(url);
-                        }
+                      final url = Uri.parse(widget.event.entryLink!);
+                      if (await canLaunchUrl(url)) {
+                        launchUrl(url);
                       }
                     },
                     child: const Text(

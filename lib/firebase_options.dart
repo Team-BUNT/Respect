@@ -50,20 +50,20 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAen8e-g8Qm6OQsZeOXYyoV9xTT5ry0UtU',
-    appId: '1:152521918382:android:9cdcb3117ad67a0dd3ea3f',
-    messagingSenderId: '152521918382',
-    projectId: 'respect-f905e',
-    storageBucket: 'respect-f905e.appspot.com',
+    apiKey: 'AIzaSyAii2fZH5pQJ5lgfP1pn5xosIQDWrJj4to',
+    appId: '1:555827382125:android:1ddbebdf9063685c887c64',
+    messagingSenderId: '555827382125',
+    projectId: 'respect-1f4e0',
+    storageBucket: 'respect-1f4e0.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBVuogSqbKgEJgLRXwz6uj4uGT_CwG6M0c',
-    appId: '1:152521918382:ios:f9a990ebdc380b1bd3ea3f',
-    messagingSenderId: '152521918382',
-    projectId: 'respect-f905e',
-    storageBucket: 'respect-f905e.appspot.com',
-    iosClientId: '152521918382-584v3icfg6a4c7jc1mikpv07ukbba6u4.apps.googleusercontent.com',
+    apiKey: 'AIzaSyDjMN6XK5yIbYD4I3YQbSD06X47JCobpXY',
+    appId: '1:555827382125:ios:9fd55adf50b9c41a887c64',
+    messagingSenderId: '555827382125',
+    projectId: 'respect-1f4e0',
+    storageBucket: 'respect-1f4e0.appspot.com',
+    iosClientId: '555827382125-nsn0ecr7tok6r5ivcttev7utam18e57e.apps.googleusercontent.com',
     iosBundleId: 'com.jio.RESPECT',
   );
 }

@@ -9,7 +9,7 @@ class EventCard extends StatelessWidget {
     required this.event,
   });
 
-  final Event event;
+  final DanceEvent event;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class EventCard extends StatelessWidget {
             AspectRatio(
               aspectRatio: 1.0 / 1.3,
               child: Image.network(
-                event.thumbnail ?? event.posterURL,
+                event.posterURL ?? "",
                 fit: BoxFit.cover,
               ),
             ),
@@ -35,7 +35,7 @@ class EventCard extends StatelessWidget {
                     shape: BoxShape.rectangle,
                     borderRadius: BorderRadius.circular(6.0)),
                 child: Text(
-                  'D-${int.parse(event.date.difference(DateTime.now()).inDays.toString())}',
+                  'D-${int.parse(event.date?.difference(DateTime.now()).inDays.toString() ?? "")}',
                   style: dDayChipTextStyle,
                 ),
               ),
@@ -52,7 +52,7 @@ class EventCard extends StatelessWidget {
             children: [
               Chip(
                 label: Text(
-                  event.type,
+                  event.type ?? "행사 유형",
                   style: eventTypeChipTextStyle,
                 ),
                 labelPadding:
@@ -65,10 +65,10 @@ class EventCard extends StatelessWidget {
               ),
               Wrap(
                 spacing: 8,
-                children: List.generate(event.genre.length, (index) {
+                children: List.generate(event.genres?.length ?? 0, (index) {
                   return Chip(
                     label: Text(
-                      event.genre[index],
+                      event.genres?[index] ?? "장르",
                       style: genreChipTextStyle,
                     ),
                     labelPadding: const EdgeInsets.symmetric(
@@ -87,7 +87,7 @@ class EventCard extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: Text(
-            event.name,
+            event.title ?? "행사 명",
             style: curateEventTitleStyle,
             overflow: TextOverflow.ellipsis,
           ),
@@ -95,7 +95,7 @@ class EventCard extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
           child: Text(
-            DateFormat('yyyy.MM.dd').format(event.date),
+            DateFormat('yyyy.MM.dd').format(event.date!),
             style: curateEventDateTextStyle,
           ),
         ),
