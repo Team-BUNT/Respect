@@ -71,6 +71,7 @@ class FirestoreService {
           hostInquiryUrl: danceEventMap['hostInquiryUrl'],
           ticketOptions: ticketOptions,
           hostInfos: hostInfos,
+          subTitle: danceEventMap['subTitle'],
         );
 
         danceEvents.add(danceEvent);
@@ -209,6 +210,7 @@ class FirestoreService {
           hostInquiryUrl: danceEventMap['hostInquiryUrl'],
           ticketOptions: ticketOptions,
           hostInfos: hostInfos,
+          subTitle: danceEventMap['subTitle'],
         );
 
         return danceEvent;

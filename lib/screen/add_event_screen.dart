@@ -227,6 +227,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
       DanceEvent(
         createdAt: DateTime.now(),
         id: id,
+        subTitle: "", // TODO subTitle 추가 텍스트 필드 구성
         // thumbnail: thumbnail,
         posterURL: posterURL,
         title: name ?? '??',

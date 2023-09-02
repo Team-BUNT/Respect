@@ -19,7 +19,6 @@ class EventDetailScreen extends StatefulWidget {
   });
 
   static String routeName = '/event_detail_screen';
-
   final DanceEvent event;
 
   @override
@@ -28,6 +27,37 @@ class EventDetailScreen extends StatefulWidget {
 
 class _EventDetailScreenState extends State<EventDetailScreen> {
   bool isLoading = false;
+  bool showCTA = false;
+  final scrollController = ScrollController();
+  double previousScrollPosition = 0.0;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // final scrollController = ScrollController();
+    scrollController.addListener(() {
+      double currentScrollPosition = scrollController.position.pixels;
+      if (currentScrollPosition > previousScrollPosition) {
+        // Scrolling down
+        if (currentScrollPosition > 200) {
+          setState(() {
+            showCTA = true;
+          });
+        }
+      } else {
+        // Scrolling up
+        if (currentScrollPosition > 700) {
+          return;
+        } else {
+          setState(() {
+            showCTA = false;
+          });
+        }
+      }
+      previousScrollPosition = currentScrollPosition;
+    });
+  }
 
   KakaotalkSharingUtil kakaotalkSharingUtil = KakaotalkSharingUtil();
 
@@ -84,253 +114,305 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             elevation: 0.1,
           ),
           backgroundColor: Colors.white,
-          body: ListView(
+          body: Stack(
             children: [
-              Stack(
-                children: [
-                  Image.network(widget.event.posterURL ?? ""),
-                  Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 5.0, horizontal: 12.0),
-                        decoration: BoxDecoration(
-                            color: dDayChipColor,
-                            shape: BoxShape.rectangle,
-                            borderRadius: BorderRadius.circular(6.0)),
-                        child: Text(
-                          'D-${int.parse(widget.event.date?.difference(DateTime.now()).inDays.toString() ?? "")}',
-                          style: const TextStyle(
-                            fontSize: 16.0,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.white,
-                            fontFamily: 'Pretendard',
+              SingleChildScrollView(
+                controller: scrollController,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Stack(
+                      children: [
+                        Image.network(widget.event.posterURL ?? ""),
+                        Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 5.0, horizontal: 12.0),
+                              decoration: BoxDecoration(
+                                  color: dDayChipColor,
+                                  shape: BoxShape.rectangle,
+                                  borderRadius: BorderRadius.circular(6.0)),
+                              child: Text(
+                                'D-${int.parse(widget.event.date?.difference(DateTime.now()).inDays.toString() ?? "")}',
+                                style: const TextStyle(
+                                  fontSize: 16.0,
+                                  fontWeight: FontWeight.w400,
+                                  color: Colors.white,
+                                  fontFamily: 'Pretendard',
+                                ),
+                              ),
+                            ))
+                      ],
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Row(
+                        children: [
+                          Chip(
+                            label: Text(
+                              widget.event.type ?? "타입",
+                              style: eventDetailTypeTextStyle,
+                            ),
+                            labelPadding:
+                                const EdgeInsets.symmetric(horizontal: 12.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(5.0),
+                            ),
+                            backgroundColor: eventTypeChipColor,
+                            materialTapTargetSize:
+                                MaterialTapTargetSize.shrinkWrap,
+                          ),
+                          const SizedBox(
+                            width: 8,
+                          ),
+                          Wrap(
+                            spacing: 8,
+                            children: List.generate(
+                                widget.event.genres?.length ?? 0, (index) {
+                              return Chip(
+                                label: Text(
+                                  widget.event.genres?[index] ?? "",
+                                  style: eventDetailGenreTextStyle,
+                                ),
+                                labelPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12.0),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5.0),
+                                ),
+                                backgroundColor: genreChipColor,
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                              );
+                            }),
+                          ),
+                          const Spacer(),
+                          CupertinoButton(
+                            padding: const EdgeInsets.all(0.0),
+                            child: Icon(
+                              CupertinoIcons.share,
+                              color: Colors.black.withOpacity(0.5),
+                            ),
+                            onPressed: () async {
+                              setState(() => isLoading = true);
+                              await shareToKakao();
+                              setState(() => isLoading = false);
+                            },
+                          )
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: ListView(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        children: [
+                          Text(
+                            widget.event.title ?? "행사 명",
+                            style: eventDetailNameTextStyle,
+                          ),
+                          const SizedBox(height: 8.0),
+                          Text(
+                            DateFormat('yyyy.MM.dd').format(
+                              widget.event.date!,
+                            ),
+                            style: eventDetailDateTextStyle,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20.0),
+                    const Divider(thickness: 2.0, color: Color(0xFFF4F4F4)),
+                    const SizedBox(height: 20.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            '행사정보',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black,
+                              fontFamily: 'Pretendard',
+                            ),
+                          ),
+                          const SizedBox(height: 16.0),
+                          eventInfoRow(
+                              title: '장소', content: widget.event.place ?? ""),
+                          const SizedBox(height: 16.0),
+                          eventInfoRow(
+                              title: '신청기한',
+                              content:
+                                  '${DateFormat('yyyy.MM.dd HH').format(widget.event.date!)} 까지'),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20.0),
+                    const Divider(thickness: 2.0, color: Color(0xFFF4F4F4)),
+                    const SizedBox(height: 20.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            '주최자 정보',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black,
+                              fontFamily: 'Pretendard',
+                            ),
+                          ),
+                          const SizedBox(height: 8.0),
+                          ListView.builder(
+                              itemCount: widget.event.hostInfos?.length ?? 0,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                final hostInfo = widget.event.hostInfos?[index];
+                                if (hostInfo != null) {
+                                  return HostInfoListTile(
+                                    profileUrl:
+                                        'https://d2u3dcdbebyaiu.cloudfront.net/uploads/atch_img/724/2329af2ecf5f9b4dc8846a398dbd8635_res.jpeg',
+                                    role: hostInfo.role ?? "",
+                                    name: hostInfo.name ?? "",
+                                    instaUrl:
+                                        'https://www.instagram.com/${hostInfo.instagramId}/',
+                                  );
+                                }
+                                return null;
+                              })
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12.0),
+                    const Divider(thickness: 2.0, color: Color(0xFFF4F4F4)),
+                    const SizedBox(height: 20.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            '행사 개요',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black,
+                              fontFamily: 'Pretendard',
+                            ),
+                          ),
+                          const SizedBox(height: 16.0),
+                          Text(
+                            widget.event.subTitle ?? "",
+                            style: const TextStyle(
+                              color: Color(0xFF636366),
+                              fontSize: 15,
+                              fontFamily: 'Pretendard',
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20.0),
+                    const Divider(thickness: 2.0, color: Color(0xFFF4F4F4)),
+                    const SizedBox(height: 20.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            '행사 상세정보',
+                            style: TextStyle(
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.black,
+                              fontFamily: 'Pretendard',
+                            ),
+                          ),
+                          const SizedBox(height: 16.0),
+                          Text(
+                            widget.event.detail ?? "",
+                            style: const TextStyle(
+                              color: Color(0xFF636366),
+                              fontSize: 15,
+                              fontFamily: 'Pretendard',
+                              fontWeight: FontWeight.w400,
+                              height: 1.65,
+                              letterSpacing: -0.10,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 120.0),
+                    //TODO: Apply Button
+                    if (widget.event.entryLink != null ||
+                        widget.event.entryLink != null)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: CupertinoButton(
+                          color: Colors.black,
+                          padding: const EdgeInsets.all(20.0),
+                          onPressed: () async {
+                            final url = Uri.parse(widget.event.entryLink!);
+
+                            if (await canLaunchUrl(url)) {
+                              launchUrl(url);
+                            }
+                          },
+                          child: const Text(
+                            '신청하기',
+                            style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFFFFFFFF),
+                              fontFamily: 'Pretendard',
+                            ),
                           ),
                         ),
-                      ))
-                ],
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    Chip(
-                      label: Text(
-                        widget.event.type ?? "타입",
-                        style: eventDetailTypeTextStyle,
-                      ),
-                      labelPadding:
-                          const EdgeInsets.symmetric(horizontal: 12.0),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(5.0),
-                      ),
-                      backgroundColor: eventTypeChipColor,
-                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Wrap(
-                      spacing: 8,
-                      children: List.generate(widget.event.genres?.length ?? 0,
-                          (index) {
-                        return Chip(
-                          label: Text(
-                            widget.event.genres?[index] ?? "",
-                            style: eventDetailGenreTextStyle,
-                          ),
-                          labelPadding:
-                              const EdgeInsets.symmetric(horizontal: 12.0),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5.0),
-                          ),
-                          backgroundColor: genreChipColor,
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                        );
-                      }),
-                    ),
-                    const Spacer(),
-                    CupertinoButton(
-                      padding: const EdgeInsets.all(0.0),
-                      child: Icon(
-                        CupertinoIcons.share,
-                        color: Colors.black.withOpacity(0.5),
-                      ),
-                      onPressed: () async {
-                        setState(() => isLoading = true);
-                        await shareToKakao();
-                        setState(() => isLoading = false);
-                      },
-                    )
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: ListView(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  children: [
-                    Text(
-                      widget.event.title ?? "행사 명",
-                      style: eventDetailNameTextStyle,
-                    ),
-                    const SizedBox(height: 8.0),
-                    Text(
-                      DateFormat('yyyy.MM.dd').format(
-                        widget.event.date!,
-                      ),
-                      style: eventDetailDateTextStyle,
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20.0),
-              const Divider(thickness: 2.0, color: Color(0xFFF4F4F4)),
-              const SizedBox(height: 20.0),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      '행사정보',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black,
-                        fontFamily: 'Pretendard',
-                      ),
-                    ),
-                    const SizedBox(height: 16.0),
-                    eventInfoRow(title: '장소', content: '서울특별시 광진구 동일로 100-100'),
-                    const SizedBox(height: 16.0),
-                    eventInfoRow(
-                        title: '신청기한',
-                        content:
-                            '${DateFormat('yyyy.MM.dd').format(widget.event.date!)} 까지'),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20.0),
-              const Divider(thickness: 2.0, color: Color(0xFFF4F4F4)),
-              const SizedBox(height: 20.0),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      '주최자 정보',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black,
-                        fontFamily: 'Pretendard',
-                      ),
-                    ),
-                    const SizedBox(height: 8.0),
-                    for (int i = 0; i < 3; i++)
-                      const HostInfoListTile(
-                        profileUrl:
-                            'https://d2u3dcdbebyaiu.cloudfront.net/uploads/atch_img/724/2329af2ecf5f9b4dc8846a398dbd8635_res.jpeg',
-                        role: 'MC',
-                        name: 'Adrian',
-                        instaUrl: 'https://www.instagram.com/yuns2_21/',
                       )
                   ],
                 ),
               ),
-              const SizedBox(height: 12.0),
-              const Divider(thickness: 2.0, color: Color(0xFFF4F4F4)),
-              const SizedBox(height: 20.0),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '행사 개요',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black,
-                        fontFamily: 'Pretendard',
-                      ),
-                    ),
-                    SizedBox(height: 16.0),
-                    Text(
-                      '동해물과 백두산이 마르고 닳도록하느님이 보우하사',
-                      style: TextStyle(
-                        color: Color(0xFF636366),
-                        fontSize: 15,
-                        fontFamily: 'Pretendard',
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20.0),
-              const Divider(thickness: 2.0, color: Color(0xFFF4F4F4)),
-              const SizedBox(height: 20.0),
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '행사 개요',
-                      style: TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.black,
-                        fontFamily: 'Pretendard',
-                      ),
-                    ),
-                    SizedBox(height: 16.0),
-                    Text(
-                      '1. 동해물과 백두산이 마르고 닳도록하느님이 보우하사\n우리나라 만세무궁화 삼천리 화려 강산 대한 사람\n대한으로 길이 보전하세 2. 남산 위에 저 소나무 철갑을\n두른 듯바람 서리 불변함은 우리 기상일세무궁화 삼천리\n화려 강산대한 사람 대한으로 길이 보전하세 \n3. 가을 하늘 공활한데 높고 구름 없이밝은 달은 우리 가슴\n일편단심일세무궁화 삼천리 화려 강산대한 사람 대한으로\n길이 보전하세4. 이 기상과 이 맘으로 충성을 다하여\n괴로우나 즐거우나 나라 사랑하세무궁화 삼천리 화려\n강산대한 사람 대한으로 길이 보전하세',
-                      style: TextStyle(
-                        color: Color(0xFF636366),
-                        fontSize: 15,
-                        fontFamily: 'Pretendard',
-                        fontWeight: FontWeight.w400,
-                        height: 1.65,
-                        letterSpacing: -0.10,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 40.0),
-              //TODO: Apply Button
-              if (widget.event.entryLink != null ||
-                  widget.event.entryLink != null)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 240),
+                bottom: showCTA
+                    ? 0.0
+                    : -120.0, // Adjust the bottom offset as needed
+                left: 0,
+                right: 0,
+                child: Container(
+                  color: Colors.white,
                   child: CupertinoButton(
-                    color: Colors.black,
-                    padding: const EdgeInsets.all(20.0),
-                    onPressed: () async {
-                      final url = Uri.parse(widget.event.entryLink!);
-
-                      if (await canLaunchUrl(url)) {
-                        launchUrl(url);
-                      }
-                    },
-                    child: const Text(
-                      '신청하기',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                        color: Color(0xFFFFFFFF),
-                        fontFamily: 'Pretendard',
+                    padding: const EdgeInsets.only(
+                        left: 12, right: 12, bottom: 40, top: 12),
+                    onPressed: () {},
+                    child: Container(
+                      height: 60.0,
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Center(
+                        child: Text(
+                          '접수하기',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20.0,
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                )
+                ),
+              ),
             ],
           ),
         ),

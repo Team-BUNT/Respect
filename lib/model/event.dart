@@ -14,7 +14,9 @@ class DanceEvent {
   //MARK: - detail information
   final String? type;
   final String? title;
+  final String? subTitle;
   final String? place;
+
   final String? provinance;
   final DateTime? date;
   final String? detail;
@@ -42,6 +44,7 @@ class DanceEvent {
     this.hostContact,
     this.hostInquiryUrl,
     required this.title,
+    required this.subTitle,
     required this.place,
     required this.date,
     this.ticketOpenDate,
@@ -86,6 +89,7 @@ class DanceEvent {
           .toList(),
       account: json['account'],
       entryLink: json['entryLink'],
+      subTitle: json['subTitle'],
     );
   }
 
@@ -114,6 +118,7 @@ class DanceEvent {
       'hostInfos': hostInfos?.map((info) => info?.toJson()).toList(),
       'account': account,
       'entryLink': entryLink,
+      'subTitle': subTitle,
     };
   }
 
