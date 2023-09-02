@@ -8,6 +8,7 @@ class DanceEvent {
   final int? totalCapacity;
   final bool? isShowing;
   final bool? paymentAgent;
+
   //MARK: - subcollections
   final List<TicketOption>? ticketOptions;
   //MARK: - detail information

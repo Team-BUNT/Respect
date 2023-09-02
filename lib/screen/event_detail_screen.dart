@@ -32,15 +32,14 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   KakaotalkSharingUtil kakaotalkSharingUtil = KakaotalkSharingUtil();
 
   Future<void> shareToKakao() async {
-    final response = await http
-        .get(Uri.parse(widget.event.thumbnail ?? widget.event.posterURL));
+    final response = await http.get(Uri.parse(widget.event.posterURL ?? ""));
     final tempDir = await getTemporaryDirectory();
     File file = await File('${tempDir.path}/image.png').create();
     file.writeAsBytesSync(response.bodyBytes);
 
     await kakaotalkSharingUtil.shareToKakaotalk(
       image: file,
-      name: widget.event.name,
+      name: widget.event.title ?? "",
     );
   }
 
@@ -87,29 +86,28 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           backgroundColor: Colors.white,
           body: ListView(
             children: [
-
-              Stack(children: [
-                Image.network(widget.event.posterURL ?? ""),
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 5.0, horizontal: 12.0),
-                    decoration: BoxDecoration(
-                        color: dDayChipColor,
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(6.0)),
-                    child: Text(
-                      'D-${int.parse(widget.event.date?.difference(DateTime.now()).inDays.toString() ?? "")}',
-                      style: const TextStyle(
-                        fontSize: 16.0,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.white,
-                        fontFamily: 'Pretendard',
-
-                      ),
-                    ),
-                  )
+              Stack(
+                children: [
+                  Image.network(widget.event.posterURL ?? ""),
+                  Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 5.0, horizontal: 12.0),
+                        decoration: BoxDecoration(
+                            color: dDayChipColor,
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(6.0)),
+                        child: Text(
+                          'D-${int.parse(widget.event.date?.difference(DateTime.now()).inDays.toString() ?? "")}',
+                          style: const TextStyle(
+                            fontSize: 16.0,
+                            fontWeight: FontWeight.w400,
+                            color: Colors.white,
+                            fontFamily: 'Pretendard',
+                          ),
+                        ),
+                      ))
                 ],
               ),
               Padding(
@@ -308,20 +306,19 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               ),
               const SizedBox(height: 40.0),
               //TODO: Apply Button
-              if (widget.event.entryLink != null || widget.event.entryLink != null)
+              if (widget.event.entryLink != null ||
+                  widget.event.entryLink != null)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: CupertinoButton(
                     color: Colors.black,
                     padding: const EdgeInsets.all(20.0),
                     onPressed: () async {
-                    
-                        final url = Uri.parse(widget.event.entryLink!);
+                      final url = Uri.parse(widget.event.entryLink!);
 
-                        if (await canLaunchUrl(url)) {
-                          launchUrl(url);
-                        }
-                      
+                      if (await canLaunchUrl(url)) {
+                        launchUrl(url);
+                      }
                     },
                     child: const Text(
                       '신청하기',
