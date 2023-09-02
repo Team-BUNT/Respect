@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:respect/constants.dart';
-import 'package:respect/screen/apply_form_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -330,13 +329,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     padding: const EdgeInsets.all(20.0),
                     onPressed: () async {
                       if (widget.event.form != null) {
-                        Navigator.pushNamed(
-                          context,
-                          ApplyFormScreen.routeName,
-                          arguments: ApplyFormScreenArguments(
-                              isAdmin: false,
-                              applyFormDocument: widget.event.form ?? ''),
-                        );
+                        //TODO: Navigate to 행사 참가 신청 페이지
+
                       } else {
                         final url = Uri.parse(widget.event.link!);
 
