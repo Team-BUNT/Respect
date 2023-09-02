@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:respect/components/host_info_list_tile.dart';
 import 'package:respect/constants.dart';
+import 'package:respect/screen/apply_event_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
@@ -392,7 +393,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   color: Colors.white,
                   child: CupertinoButton(
                     padding: const EdgeInsets.only(
-                        left: 12, right: 12, bottom: 40, top: 12),
+                        left: 12, right: 12, bottom: 40, top: 0),
                     onPressed: () async {
                       if (widget.event.entryLink != null) {
                         debugPrint("구글 폼 링크 오픈");
@@ -401,7 +402,11 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                           launchUrl(url);
                         }
                       } else {
-                        //TODO - 행사 접수 페이지로 이동
+                        Navigator.pushNamed(
+                          context,
+                          ApplyEventScreen.routeName,
+                          arguments: widget.event,
+                        );
                         debugPrint("행사 접수 페이지 이동");
 
                         //TODO - 행사가 RESPECT HOST  에서 만들어졌는지 로직 추가 필요
