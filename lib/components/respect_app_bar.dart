@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:respect/screen/add_event_screen.dart';
+import 'package:respect/screen/my_entry_screen.dart';
 import '../constants.dart';
 import '../model/event_type.dart';
 
@@ -64,6 +65,20 @@ class _RespectAppBarState extends State<RespectAppBar>
             Navigator.pushNamed(
               context,
               AddEventScreen.routeName,
+            );
+          },
+        ),
+        CupertinoButton(
+          padding: const EdgeInsets.all(0.0),
+          child: const Icon(
+            CupertinoIcons.profile_circled,
+            size: 22.0,
+            color: Colors.black,
+          ),
+          onPressed: () {
+            Navigator.pushNamed(
+              context,
+              MyEntryScreen.routeName,
             );
           },
         ),
