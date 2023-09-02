@@ -32,69 +32,18 @@ class _EventScreenState extends State<EventScreen> {
   List<DanceEvent> filteredEventList = [];
 
   Future getEvents() async {
-    eventList = await FirestoreService.getAllDanceEvents();
     debugPrint("DEBUG: getEvents $eventList");
+
+    eventList = await FirestoreService.getAllDanceEvents();
+
     setState(() {});
   }
 
-  // Future getEvents() async {
-  //   await FirebaseFirestore.instance
-  //       .collection('events')
-  //       .where('isShowing', isEqualTo: true)
-  //       .where('date', isGreaterThanOrEqualTo: DateTime.now())
-  //       .orderBy('date')
-  //       .get()
-  //       .then(
-  //     (snapshot) {
-  //       for (var doc in snapshot.docs) {
-  //         var document = doc.data();
-  //         String id = document['id'];
-  //         // String? thumbnail = document['thumbnail'];
-  //         String posterURL = document['posterURL'];
-  //         String title = document['title'];
-  //         String province = document['province'];
-  //         String location = document['location'];
-  //         DateTime date = (document['date'] as Timestamp).toDate();
-  //         DateTime? dueDate = ((document['dueDate'] == null)
-  //             ? null
-  //             : (document['dueDate'] as Timestamp).toDate());
-  //         String type = document['type'];
-  //         List<String> genre = List<String>.from(document['genre']);
-  //         String? account = document['account'];
-  //         String? form = document['form'];
-  //         String? link = document['link'];
-  //         String? detail = document['detail'];
-  //         String? hostName = document['hostName'];
-  //         String? hostContact = document['hostContact'];
-  //         bool? isShowing = document['isShowing'];
-
-  //         DanceEvent event = DanceEvent(
-  //           id: id,
-  //           // : thumbnail,
-  //           posterURL: posterURL,
-  //           title: title,
-  //           province: province,
-  //           location: location,
-  //           date: date,
-  //           c: dueDate,
-  //           type: type,
-  //           genres: genres,
-  //           account: account,
-  //           // form: form,
-  //           entryLink: link,
-  //           detail: detail,
-  //           hostName: hostName,
-  //           hostContact: hostContact,
-  //           isShowing: isShowing,
-  //         );
-  //         eventList.add(event);
-  //         setState(() {
-  //           filteredEventList = eventList;
-  //         });
-  //       }
-  //     },
-  //   );
-  // }
+  @override
+  void initState() {
+    getEvents();
+    super.initState();
+  }
 
   void filterEvent() {
     filteredEventList = eventList;
@@ -148,13 +97,6 @@ class _EventScreenState extends State<EventScreen> {
           )
           .toList();
     }
-  }
-
-  @override
-  void initState() {
-    getEvents();
-
-    super.initState();
   }
 
   @override
