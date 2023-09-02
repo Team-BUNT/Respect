@@ -164,7 +164,7 @@ class _ApplyEventScreenState extends State<ApplyEventScreen> {
       ),
       onPressed: () {
         final newValue = (agreePrivacy && agreePurchase);
-        
+
         setState(() {
           agreePrivacy = !newValue;
           agreePurchase = !newValue;
@@ -187,6 +187,7 @@ class _ApplyEventScreenState extends State<ApplyEventScreen> {
           backgroundColor: Colors.white,
           elevation: 0.1,
         ),
+        backgroundColor: Colors.white,
         body: ListView(
           children: [
             const SizedBox(height: 36.0),
