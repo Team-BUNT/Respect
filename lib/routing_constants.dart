@@ -6,5 +6,4 @@ final routes = {
   EventScreen.routeName: (context) => const EventScreen(),
   AddEventScreen.routeName: (context) => const AddEventScreen(),
   MyEntryScreen.routeName: (context) => const MyEntryScreen(),
-  // MyFormsScreen.routeName: (context) => const MyFormsScreen(),
 };

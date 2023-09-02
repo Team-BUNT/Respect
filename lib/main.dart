@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
 import 'package:respect/routing_constants.dart';
+import 'package:respect/screen/apply_event_screen.dart';
 import 'package:respect/screen/event_detail_screen.dart';
 import 'package:respect/screen/events_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -51,19 +52,26 @@ class RespectApp extends StatelessWidget {
       title: 'Respect',
       initialRoute: EventScreen.routeName,
       routes: routes,
-      onGenerateRoute: (settings) {
-        switch (settings.name) {
-          case '/event_detail_screen':
-            final arguments = settings.arguments as DanceEvent;
-
-            return MaterialPageRoute(
-              builder: (context) => EventDetailScreen(
-                event: arguments,
-              ),
-            );
-        }
-        return null;
-      },
+      onGenerateRoute: onGenerateRoute,
     );
+  }
+
+  Route<dynamic>? onGenerateRoute(settings) {
+    switch (settings.name) {
+      case '/event_detail_screen':
+        final event = settings.arguments as DanceEvent;
+
+        return MaterialPageRoute(
+          builder: (context) => EventDetailScreen(event: event),
+        );
+
+      case '/apply_event_screen':
+        final event = settings.arguments as DanceEvent;
+
+        return MaterialPageRoute(
+          builder: (context) => ApplyEventScreen(event: event),
+        );
+    }
+    return null;
   }
 }
