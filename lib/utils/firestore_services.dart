@@ -2,12 +2,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
 import '../model/event.dart';
+import '../model/event_entry.dart';
 
 class FirestoreService {
   // static final enrollment
   static final db = FirebaseFirestore.instance;
   static final entryRef = db.collection('Entries');
   static final eventsRef = db.collection('Events');
+
+  static addEntry(EventEntry entry) async {
+    var jsonData = entry.toJson();
+    await entryRef.add(jsonData);
+    debugPrint("FIRESTORE: addEntry");
+  }
 
   static Future<List<DanceEvent>> getAllDanceEvents() async {
     debugPrint("FIRESTORE: getAllDanceEventsBy");
