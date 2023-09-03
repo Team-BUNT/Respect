@@ -225,7 +225,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
 
     await eventsRef.add(
       DanceEvent(
-        createdAt: DateTime.now(),
+        createdAt: Timestamp.now(),
         id: id,
         subTitle: "", // TODO subTitle 추가 텍스트 필드 구성
         thumbnailURL: thumbnailURL,
@@ -233,8 +233,9 @@ class _AddEventScreenState extends State<AddEventScreen> {
         title: name ?? '??',
         provinance: province.convertToString,
         place: location ?? '??',
-        date: date.first ?? DateTime.now(),
-        ticketCloseDate: dueDate?.first ?? DateTime.now(),
+
+        date: date.first as Timestamp?,
+        ticketCloseDate: dueDate?.first as Timestamp?,
         type: eventType.convertToString,
         genres: genre,
         account: account,

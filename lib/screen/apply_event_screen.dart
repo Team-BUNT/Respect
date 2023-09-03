@@ -38,7 +38,9 @@ class _ApplyEventScreenState extends State<ApplyEventScreen> {
       enrolledAt: Timestamp.now(),
       eventID: widget.event.id,
       eventName: widget.event.title,
+      eventDate: widget.event.date,
       ticketOption: selectedTicket?.title,
+      price: selectedTicket?.price,
       paymentMethod: "접수",
       name: "정윤성",
       dancerName: "NEIS",
@@ -115,13 +117,14 @@ class _ApplyEventScreenState extends State<ApplyEventScreen> {
                   const SizedBox(height: 16.0),
                   EventInfoRow(
                     title: '날짜',
-                    content:
-                        DateFormat('yyyy.MM.dd').format(widget.event.date!),
+                    content: DateFormat('yyyy.MM.dd')
+                        .format(widget.event.date!.toDate()),
                   ),
                   const SizedBox(height: 16.0),
                   EventInfoRow(
                     title: '시간',
-                    content: DateFormat('HH:mm').format(widget.event.date!),
+                    content:
+                        DateFormat('HH:mm').format(widget.event.date!.toDate()),
                   ),
                 ],
               ),
@@ -445,8 +448,8 @@ class _ApplyEventScreenState extends State<ApplyEventScreen> {
               ),
               const SizedBox(width: 16.0),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       option.title!,
@@ -457,32 +460,17 @@ class _ApplyEventScreenState extends State<ApplyEventScreen> {
                         fontWeight: FontWeight.w500,
                       ),
                     ),
-                    const SizedBox(height: 4.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text(
-                          'Adrian',
-                          style: TextStyle(
-                            color: Colors.transparent,
-                            fontSize: 15,
-                            fontFamily: 'Pretendard',
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        Text(
-                          'KRW ${Formatter.formatNumber(option.price!)}',
-                          textAlign: TextAlign.right,
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontSize: 15,
-                            fontFamily: 'Pretendard',
-                            fontWeight: FontWeight.w400,
-                            height: 1.47,
-                          ),
-                        )
-                      ],
-                    ),
+                    Text(
+                      'KRW ${Formatter.formatNumber(option.price!)}',
+                      textAlign: TextAlign.right,
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
+                        fontFamily: 'Pretendard',
+                        fontWeight: FontWeight.w400,
+                        height: 1.47,
+                      ),
+                    )
                   ],
                 ),
               ),

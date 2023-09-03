@@ -48,7 +48,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
         }
       } else {
         // Scrolling up
-        if (currentScrollPosition > 700) {
+        if (currentScrollPosition > 200) {
           return;
         } else {
           setState(() {
@@ -135,7 +135,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                                   shape: BoxShape.rectangle,
                                   borderRadius: BorderRadius.circular(6.0)),
                               child: Text(
-                                'D-${int.parse(widget.event.date?.difference(DateTime.now()).inDays.toString() ?? "")}',
+                                'D-${int.parse(widget.event.date!.toDate().difference(DateTime.now()).inDays.toString() ?? "")}',
                                 style: const TextStyle(
                                   fontSize: 16.0,
                                   fontWeight: FontWeight.w400,
@@ -216,14 +216,14 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                           const SizedBox(height: 8.0),
                           Text(
                             DateFormat('yyyy.MM.dd').format(
-                              widget.event.date!,
+                              widget.event.date!.toDate(),
                             ),
                             style: eventDetailDateTextStyle,
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20.0),
+
                     const Divider(thickness: 2.0, color: Color(0xFFF4F4F4)),
                     const SizedBox(height: 20.0),
                     Padding(
@@ -247,7 +247,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                           eventInfoRow(
                               title: '신청기한',
                               content:
-                                  '${DateFormat('yyyy.MM.dd HH').format(widget.event.date!)} 까지'),
+                                  '${DateFormat('yyyy.MM.dd HH').format(widget.event.date!.toDate())} 까지'),
                         ],
                       ),
                     ),
@@ -290,7 +290,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 12.0),
+
                     const Divider(thickness: 2.0, color: Color(0xFFF4F4F4)),
                     const SizedBox(height: 20.0),
                     Padding(

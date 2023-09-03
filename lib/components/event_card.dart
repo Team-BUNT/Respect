@@ -35,7 +35,7 @@ class EventCard extends StatelessWidget {
                     shape: BoxShape.rectangle,
                     borderRadius: BorderRadius.circular(6.0)),
                 child: Text(
-                  'D-${int.parse(event.date?.difference(DateTime.now()).inDays.toString() ?? "")}',
+                  'D-${int.parse(event.date?.toDate().difference(DateTime.now()).inDays.toString() ?? "")}',
                   style: dDayChipTextStyle,
                 ),
               ),
@@ -95,7 +95,7 @@ class EventCard extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
           child: Text(
-            DateFormat('yyyy.MM.dd').format(event.date!),
+            DateFormat('yyyy.MM.dd').format(event.date!.toDate()),
             style: curateEventDateTextStyle,
           ),
         ),

@@ -18,7 +18,7 @@ class EventInfoRow extends StatelessWidget {
       fontFamily: 'Pretendard',
       fontWeight: FontWeight.w500,
     );
-    
+
     return Row(
       children: [
         SizedBox(
@@ -26,11 +26,15 @@ class EventInfoRow extends StatelessWidget {
           child: Text(title, style: infoStyle),
         ),
         const SizedBox(width: 4.0),
-        Text(
-          content,
-          style: infoStyle.copyWith(
-            color: Colors.black,
-            fontWeight: FontWeight.w400,
+        Flexible(
+          child: Text(
+            content,
+            overflow: TextOverflow.visible,
+            maxLines: 2,
+            style: infoStyle.copyWith(
+              color: Colors.black,
+              fontWeight: FontWeight.w400,
+            ),
           ),
         )
       ],

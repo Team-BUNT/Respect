@@ -1,10 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class DanceEvent {
   final String? id;
   //MARK: - default setting
-  final DateTime? createdAt;
-
-  final DateTime? ticketOpenDate;
-  final DateTime? ticketCloseDate;
+  final Timestamp? createdAt;
+  final Timestamp? ticketOpenDate;
+  final Timestamp? ticketCloseDate;
   final int? totalCapacity;
   final bool? isShowing;
   final bool? paymentAgent;
@@ -20,7 +21,7 @@ class DanceEvent {
   final String? place;
 
   final String? provinance;
-  final DateTime? date;
+  final Timestamp? date;
   final String? detail;
   final List<String>? genres;
   // HOST
@@ -67,11 +68,9 @@ class DanceEvent {
       provinance: json['provinance'],
       posterURL: json['posterURL'],
       thumbnailURL: json['thumbnailURL'],
-      createdAt: DateTime.parse(json['createdAt']),
-      ticketOpenDate: json['ticketOpenDate'] != null
-          ? DateTime.parse(json['ticketOpenDate'])
-          : null,
-      ticketCloseDate: DateTime.parse(json['ticketCloseDate']),
+      createdAt: json['createdAt'] as Timestamp?,
+      ticketOpenDate: json['ticketOpenDate'] as Timestamp?,
+      ticketCloseDate: json['ticketCloseDate'] as Timestamp?,
       totalCapacity: json['totalCapacity'],
       isShowing: json['isShowing'],
       paymentAgent: json['paymentAgent'],
@@ -81,7 +80,7 @@ class DanceEvent {
       hostInquiryUrl: json['hostInquiryUrl'],
       title: json['title'],
       place: json['place'],
-      date: DateTime.parse(json['date']),
+      date: json['date'] as Timestamp?,
       type: json['type'],
       detail: json['detail'],
       genres: List<String>.from(json['genres'] ?? []),
@@ -103,9 +102,9 @@ class DanceEvent {
       'provinance': provinance,
       'posterURL': posterURL,
       'thumbnailURL': thumbnailURL,
-      'createdAt': createdAt?.toIso8601String(),
-      'ticketOpenDate': ticketOpenDate?.toIso8601String(),
-      'ticketCloseDate': ticketCloseDate?.toIso8601String(),
+      'createdAt': createdAt,
+      'ticketOpenDate': ticketOpenDate,
+      'ticketCloseDate': ticketCloseDate,
       'totalCapacity': totalCapacity,
       'isShowing': isShowing,
       'paymentAgent': paymentAgent,
@@ -115,7 +114,7 @@ class DanceEvent {
       'hostInquiryUrl': hostInquiryUrl,
       'title': title,
       'place': place,
-      'date': date?.toIso8601String(),
+      'date': date,
       'type': type,
       'detail': detail,
       'genres': genres,

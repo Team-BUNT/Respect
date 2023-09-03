@@ -59,15 +59,15 @@ class FirestoreService {
           provinance: danceEventMap['provinance'],
           posterURL: danceEventMap['posterURL'],
           thumbnailURL: danceEventMap['thumbnailURL'],
-          createdAt: DateTime.parse(danceEventMap['createdAt']),
+          createdAt: danceEventMap['createdAt'] as Timestamp?,
           totalCapacity: danceEventMap['totalCapacity'],
           isShowing: danceEventMap['isShowing'],
           paymentAgent: danceEventMap['paymentAgent'],
           title: danceEventMap['title'],
           place: danceEventMap['place'],
-          date: DateTime.parse(danceEventMap['date']),
-          ticketOpenDate: DateTime.parse(danceEventMap['ticketOpenDate']),
-          ticketCloseDate: DateTime.parse(danceEventMap['ticketCloseDate']),
+          date: danceEventMap['date'] as Timestamp?,
+          ticketOpenDate: danceEventMap['ticketOpenDate'] as Timestamp?,
+          ticketCloseDate: danceEventMap['ticketCloseDate'] as Timestamp?,
           type: danceEventMap['type'],
           detail: danceEventMap['detail'],
           genres: danceEventMap['genres'] != null
@@ -87,12 +87,12 @@ class FirestoreService {
 
       return danceEvents;
     } catch (e) {
-      print("Error getting DanceEvents from Firestore: $e");
+      debugPrint("Error getting DanceEvents from Firestore: $e");
       rethrow;
     }
   }
 
-  Future<List<EventEntry>> getEventEntriesBy(String userID) async {
+  static Future<List<EventEntry>> getEventEntriesBy(String userID) async {
     try {
       QuerySnapshot querySnapshot = await entryRef
           .where('userID', isEqualTo: userID) // userID 필드를 사용한 검색
@@ -100,14 +100,14 @@ class FirestoreService {
 
       List<EventEntry> eventEntries = querySnapshot.docs.map((doc) {
         // Firestore 문서를 EventEntry 객체로 변환
-        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        return EventEntry.fromJson(data);
+        Map<String, dynamic> json = doc.data() as Map<String, dynamic>;
+        return EventEntry.fromJson(json);
       }).toList();
 
       return eventEntries;
     } catch (e) {
       // 오류 처리
-      print('오류 발생: $e');
+      debugPrint('Firestore: $e');
       return [];
     }
   }
@@ -219,15 +219,15 @@ class FirestoreService {
           provinance: danceEventMap['provinance'],
           posterURL: danceEventMap['posterURL'],
           thumbnailURL: danceEventMap['thumbnailURL'],
-          createdAt: DateTime.parse(danceEventMap['createdAt']),
+          createdAt: danceEventMap['createdAt'] as Timestamp?,
           totalCapacity: danceEventMap['totalCapacity'],
           isShowing: danceEventMap['isShowing'],
           paymentAgent: danceEventMap['paymentAgent'],
           title: danceEventMap['title'],
           place: danceEventMap['place'],
-          date: DateTime.parse(danceEventMap['date']),
-          ticketOpenDate: DateTime.parse(danceEventMap['ticketOpenDate']),
-          ticketCloseDate: DateTime.parse(danceEventMap['ticketCloseDate']),
+          date: danceEventMap['date'] as Timestamp?,
+          ticketOpenDate: danceEventMap['ticketOpenDate'] as Timestamp?,
+          ticketCloseDate: danceEventMap['ticketCloseDate'] as Timestamp?,
           type: danceEventMap['type'],
           detail: danceEventMap['detail'],
           genres: danceEventMap['genres'] != null
