@@ -49,6 +49,7 @@ class EventCard extends StatelessWidget {
           ),
           child: Wrap(
             spacing: 8,
+            runSpacing: 8,
             children: [
               Chip(
                 label: Text(
@@ -63,24 +64,21 @@ class EventCard extends StatelessWidget {
                 backgroundColor: eventTypeChipColor,
                 materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               ),
-              Wrap(
-                spacing: 8,
-                children: List.generate(event.genres?.length ?? 0, (index) {
-                  return Chip(
-                    label: Text(
-                      event.genres?[index] ?? "장르",
-                      style: genreChipTextStyle,
-                    ),
-                    labelPadding: const EdgeInsets.symmetric(
-                        horizontal: 2.0, vertical: -4.0),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6.0),
-                    ),
-                    backgroundColor: genreChipColor,
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  );
-                }),
-              ),
+              ...List.generate(event.genres?.length ?? 0, (index) {
+                return Chip(
+                  label: Text(
+                    event.genres?[index] ?? "장르",
+                    style: genreChipTextStyle,
+                  ),
+                  labelPadding: const EdgeInsets.symmetric(
+                      horizontal: 2.0, vertical: -4.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6.0),
+                  ),
+                  backgroundColor: genreChipColor,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                );
+              }),
             ],
           ),
         ),

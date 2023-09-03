@@ -150,44 +150,56 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                       padding: const EdgeInsets.all(16.0),
                       child: Row(
                         children: [
-                          Chip(
-                            label: Text(
-                              widget.event.type ?? "타입",
-                              style: eventDetailTypeTextStyle,
+                          Expanded(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  Chip(
+                                    label: Text(
+                                      widget.event.type ?? "타입",
+                                      style: eventDetailTypeTextStyle,
+                                    ),
+                                    labelPadding: const EdgeInsets.symmetric(
+                                        horizontal: 12.0),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5.0),
+                                    ),
+                                    backgroundColor: eventTypeChipColor,
+                                    materialTapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
+                                  ),
+                                  const SizedBox(
+                                    width: 8,
+                                  ),
+                                  Wrap(
+                                    spacing: 8,
+                                    children: List.generate(
+                                      widget.event.genres?.length ?? 0,
+                                      (index) {
+                                        return Chip(
+                                          label: Text(
+                                            widget.event.genres?[index] ?? "",
+                                            style: eventDetailGenreTextStyle,
+                                          ),
+                                          labelPadding:
+                                              const EdgeInsets.symmetric(
+                                                  horizontal: 12.0),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(5.0),
+                                          ),
+                                          backgroundColor: genreChipColor,
+                                          materialTapTargetSize:
+                                              MaterialTapTargetSize.shrinkWrap,
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            labelPadding:
-                                const EdgeInsets.symmetric(horizontal: 12.0),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(5.0),
-                            ),
-                            backgroundColor: eventTypeChipColor,
-                            materialTapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
                           ),
-                          const SizedBox(
-                            width: 8,
-                          ),
-                          Wrap(
-                            spacing: 8,
-                            children: List.generate(
-                                widget.event.genres?.length ?? 0, (index) {
-                              return Chip(
-                                label: Text(
-                                  widget.event.genres?[index] ?? "",
-                                  style: eventDetailGenreTextStyle,
-                                ),
-                                labelPadding: const EdgeInsets.symmetric(
-                                    horizontal: 12.0),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5.0),
-                                ),
-                                backgroundColor: genreChipColor,
-                                materialTapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
-                              );
-                            }),
-                          ),
-                          const Spacer(),
                           CupertinoButton(
                             padding: const EdgeInsets.all(0.0),
                             child: Icon(
