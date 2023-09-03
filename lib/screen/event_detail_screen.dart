@@ -259,7 +259,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                           eventInfoRow(
                               title: '신청기한',
                               content:
-                                  '${DateFormat('yyyy.MM.dd HH').format(widget.event.date!.toDate())} 까지'),
+                                  '${DateFormat('yyyy.MM.dd HH:mm').format(widget.event.ticketCloseDate!.toDate())} 까지'),
                         ],
                       ),
                     ),
@@ -289,8 +289,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                                 final hostInfo = widget.event.hostInfos?[index];
                                 if (hostInfo != null) {
                                   return HostInfoListTile(
-                                    profileUrl:
-                                        'https://d2u3dcdbebyaiu.cloudfront.net/uploads/atch_img/724/2329af2ecf5f9b4dc8846a398dbd8635_res.jpeg',
+                                    profileUrl: hostInfo.imageUrl ?? "",
                                     role: hostInfo.role ?? "",
                                     name: hostInfo.name ?? "",
                                     instaUrl:

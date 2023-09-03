@@ -264,7 +264,7 @@ class _ApplyEventScreenState extends State<ApplyEventScreen> {
                                         ),
                                       ),
                                       Text(
-                                        'KRW ${Formatter.formatNumber(selectedTicket?.price ?? 0)}',
+                                        '${Formatter.formatNumber(selectedTicket?.price ?? 0)}원',
                                         textAlign: TextAlign.right,
                                         style: const TextStyle(
                                           color: Colors.black,
