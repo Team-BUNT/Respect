@@ -390,10 +390,10 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                 left: 0,
                 right: 0,
                 child: Container(
-                  color: Colors.white,
+                  color: Colors.grey.shade100,
                   child: CupertinoButton(
                     padding: const EdgeInsets.only(
-                        left: 12, right: 12, bottom: 40, top: 0),
+                        left: 12, right: 12, bottom: 40, top: 12),
                     onPressed: () async {
                       if (widget.event.entryLink != null) {
                         debugPrint("구글 폼 링크 오픈");
@@ -408,7 +408,6 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                           arguments: widget.event,
                         );
                         debugPrint("행사 접수 페이지 이동");
-
                         //TODO - 행사가 RESPECT HOST  에서 만들어졌는지 로직 추가 필요
                       }
                     },

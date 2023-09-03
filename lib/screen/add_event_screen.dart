@@ -203,21 +203,21 @@ class _AddEventScreenState extends State<AddEventScreen> {
           ..writeAsBytesSync(
             image.encodePng(thumbImage),
           ),
-        name: '$name/thumbnail.jpg');
+        eventID: '$name/thumbnail.jpg');
     await amazonS3Util.uploadImage(
         image: File('$tempPath/poster.jpg')
           ..writeAsBytesSync(
             image.encodePng(resizedImage),
           ),
-        name: '$name/poster.jpg');
+        eventID: '$name/poster.jpg');
   }
 
   Future<void> _uploadEvent() async {
     final id = uuid.v1();
-    final thumbnail =
-        'https://respect332e182126fd429eb476f3e164260ab762544-respect.s3.ap-northeast-2.amazonaws.com/public/$name/thumbnail.jpg';
+    final thumbnailURL =
+        'https://respect332e182126fd429eb476f3e164260ab762544-respect.s3.ap-northeast-2.amazonaws.com/public/$id/poster.jpg';
     final posterURL =
-        'https://respect332e182126fd429eb476f3e164260ab762544-respect.s3.ap-northeast-2.amazonaws.com/public/$name/poster.jpg';
+        'https://respect332e182126fd429eb476f3e164260ab762544-respect.s3.ap-northeast-2.amazonaws.com/public/$id/poster.jpg';
 
     _uploadImage();
     final deviceId = await getDeviceId();
@@ -228,7 +228,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
         createdAt: DateTime.now(),
         id: id,
         subTitle: "", // TODO subTitle 추가 텍스트 필드 구성
-        // thumbnail: thumbnail,
+        thumbnailURL: thumbnailURL,
         posterURL: posterURL,
         title: name ?? '??',
         provinance: province.convertToString,

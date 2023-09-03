@@ -2,7 +2,7 @@ class DanceEvent {
   final String? id;
   //MARK: - default setting
   final DateTime? createdAt;
-  final String? posterURL;
+
   final DateTime? ticketOpenDate;
   final DateTime? ticketCloseDate;
   final int? totalCapacity;
@@ -15,6 +15,8 @@ class DanceEvent {
   final String? type;
   final String? title;
   final String? subTitle;
+  final String? posterURL;
+  final String? thumbnailURL;
   final String? place;
 
   final String? provinance;
@@ -35,6 +37,7 @@ class DanceEvent {
     required this.id,
     required this.provinance,
     required this.posterURL,
+    required this.thumbnailURL,
     required this.createdAt,
     this.totalCapacity,
     this.isShowing,
@@ -63,6 +66,7 @@ class DanceEvent {
       id: json['id'],
       provinance: json['provinance'],
       posterURL: json['posterURL'],
+      thumbnailURL: json['thumbnailURL'],
       createdAt: DateTime.parse(json['createdAt']),
       ticketOpenDate: json['ticketOpenDate'] != null
           ? DateTime.parse(json['ticketOpenDate'])
@@ -98,6 +102,7 @@ class DanceEvent {
       'id': id,
       'provinance': provinance,
       'posterURL': posterURL,
+      'thumbnailURL': thumbnailURL,
       'createdAt': createdAt?.toIso8601String(),
       'ticketOpenDate': ticketOpenDate?.toIso8601String(),
       'ticketCloseDate': ticketCloseDate?.toIso8601String(),
