@@ -190,39 +190,22 @@ class _AddEventScreenState extends State<AddEventScreen> {
     }
   }
 
-  void _uploadImage() async {
-    final originImage =
-        image.decodeImage(File(posterImage?.path ?? '').readAsBytesSync());
-    final thumbImage = image.copyResize(originImage!, width: 270);
-    final resizedImage = image.copyResize(originImage, width: 1080);
-    final tempDir = await getTemporaryDirectory();
-    String tempPath = tempDir.path;
-
-    await amazonS3Util.uploadImage(
-        image: File('$tempPath/thumbnail.jpg')
-          ..writeAsBytesSync(
-            image.encodePng(thumbImage),
-          ),
-        eventID: '$name/thumbnail.jpg');
-    await amazonS3Util.uploadImage(
-        image: File('$tempPath/poster.jpg')
-          ..writeAsBytesSync(
-            image.encodePng(resizedImage),
-          ),
-        eventID: '$name/poster.jpg');
-  }
-
   Future<void> _uploadEvent() async {
     final id = uuid.v1();
+    //MARK: - 이미지 업로드
+    final originImage =
+        image.decodeImage(File(posterImage?.path ?? '').readAsBytesSync());
+    final tempDir = await getTemporaryDirectory();
+    String tempPath = tempDir.path;
+    final imageFile = File('$tempPath/poster.png')
+      ..writeAsBytesSync(image.encodePng(originImage!));
+    await AmazonS3Util.uploadImage(image: imageFile, eventID: id);
+
+    //MARK:- 데이터 업로드
     final thumbnailURL =
         'https://respect332e182126fd429eb476f3e164260ab762544-respect.s3.ap-northeast-2.amazonaws.com/public/$id/poster.jpg';
     final posterURL =
         'https://respect332e182126fd429eb476f3e164260ab762544-respect.s3.ap-northeast-2.amazonaws.com/public/$id/poster.jpg';
-
-    _uploadImage();
-    final deviceId = await getDeviceId();
-    final form = '${deviceId}_${selectedForm?.name}';
-
     await eventsRef.add(
       DanceEvent(
         createdAt: Timestamp.now(),
@@ -233,13 +216,13 @@ class _AddEventScreenState extends State<AddEventScreen> {
         title: name ?? '??',
         provinance: province.convertToString,
         place: location ?? '??',
-
         date: date.first as Timestamp?,
         ticketCloseDate: dueDate?.first as Timestamp?,
         type: eventType.convertToString,
         genres: genre,
         account: account,
         // form: form,
+        entryLink: "", // TODO 신청폼 링크 연동하기
         detail: detail,
         hostName: hostName,
         hostContact: hostContact,

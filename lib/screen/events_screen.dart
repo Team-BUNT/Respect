@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_down_button/pull_down_button.dart';
 import 'package:respect/components/event_card.dart';
 import 'package:respect/components/respect_app_bar.dart';
 import 'package:respect/model/event_genre.dart';
 import 'package:respect/screen/event_detail_screen.dart';
+import 'package:respect/screen/events_view_model.dart';
 import 'package:respect/utils/firestore_services.dart';
 import '../components/filter_menu_chip.dart';
 import '../constants.dart';
@@ -23,93 +25,24 @@ class EventScreen extends StatefulWidget {
 
 class _EventScreenState extends State<EventScreen> {
   late final TabController tabController;
-  int currentEventTypeIndex = 0;
-
-  Province selectedProvince = Province.all;
-  EventGenre selectedGenre = EventGenre.all;
-
-  List<DanceEvent> eventList = [];
-  List<DanceEvent> filteredEventList = [];
-
-  Future getEvents() async {
-    debugPrint("DEBUG: getEvents $eventList");
-
-    eventList = await FirestoreService.getAllDanceEvents();
-
-    setState(() {});
-  }
 
   @override
   void initState() {
-    getEvents();
     super.initState();
-  }
-
-  void filterEvent() {
-    filteredEventList = eventList;
-
-    switch (currentEventTypeIndex) {
-      case 1:
-        filteredEventList = filteredEventList
-            .where(
-              (event) => event.type!.startsWith('배틀'),
-            )
-            .toList();
-      case 2:
-        filteredEventList = filteredEventList
-            .where(
-              (event) => event.type!.startsWith('퍼포먼스'),
-            )
-            .toList();
-      case 3:
-        filteredEventList = filteredEventList
-            .where(
-              (event) => event.type!.startsWith('워크샵'),
-            )
-            .toList();
-      case 4:
-        filteredEventList = filteredEventList
-            .where(
-              (event) => event.type!.startsWith('파티'),
-            )
-            .toList();
-      case 5:
-        filteredEventList = filteredEventList
-            .where(
-              (event) => event.type!.startsWith('기타'),
-            )
-            .toList();
-    }
-
-    if (selectedProvince != Province.all) {
-      filteredEventList = filteredEventList
-          .where(
-            (event) =>
-                event.provinance!.startsWith(selectedProvince.convertToString),
-          )
-          .toList();
-    }
-
-    if (selectedGenre != EventGenre.all) {
-      filteredEventList = filteredEventList
-          .where(
-            (event) => event.genres!.contains(selectedGenre.convertToString),
-          )
-          .toList();
-    }
+    final viewModel = Provider.of<EventsViewModel>(context, listen: false);
+    viewModel.fetchData();
   }
 
   @override
   Widget build(BuildContext context) {
+    final viewModel = Provider.of<EventsViewModel>(context);
     return DefaultTabController(
       length: 10,
       child: Scaffold(
         appBar: RespectAppBar(
           onSelected: (typeIndex) {
-            setState(() {
-              currentEventTypeIndex = typeIndex;
-              filterEvent();
-            });
+            viewModel.currentEventTypeIndex = typeIndex;
+            viewModel.filterEvent();
           },
         ),
         backgroundColor: Colors.white,
@@ -119,10 +52,7 @@ class _EventScreenState extends State<EventScreen> {
             displacement: 10.0,
             strokeWidth: 2.0,
             onRefresh: () async {
-              eventList.clear();
-              await getEvents();
-              filterEvent();
-              setState(() {});
+              viewModel.retrievEvents();
             },
             child: ListView(
               children: [
@@ -137,8 +67,8 @@ class _EventScreenState extends State<EventScreen> {
                           return PullDownMenuItem.selectable(
                             onTap: () {
                               setState(() {
-                                selectedProvince = province;
-                                filterEvent();
+                                viewModel.selectedProvince = province;
+                                viewModel.filterEvent();
                               });
                             },
                             title: province.convertToString,
@@ -148,7 +78,8 @@ class _EventScreenState extends State<EventScreen> {
                           onPressed: showMenu,
                           padding: EdgeInsets.zero,
                           child: FilterMenuChip(
-                            chipName: selectedProvince.convertToString,
+                            chipName:
+                                viewModel.selectedProvince.convertToString,
                           ),
                         ),
                       ),
@@ -160,10 +91,8 @@ class _EventScreenState extends State<EventScreen> {
                             EventGenre.values.map((genre) {
                           return PullDownMenuItem.selectable(
                             onTap: () {
-                              setState(() {
-                                selectedGenre = genre;
-                                filterEvent();
-                              });
+                              viewModel.selectedGenre = genre;
+                              viewModel.filterEvent();
                             },
                             title: genre.convertToString,
                           );
@@ -172,7 +101,7 @@ class _EventScreenState extends State<EventScreen> {
                           onPressed: showMenu,
                           padding: EdgeInsets.zero,
                           child: FilterMenuChip(
-                            chipName: selectedGenre.convertToString,
+                            chipName: viewModel.selectedGenre.convertToString,
                           ),
                         ),
                       ),
@@ -189,7 +118,7 @@ class _EventScreenState extends State<EventScreen> {
                     ],
                   ),
                 ),
-                if (eventList.isEmpty)
+                if (viewModel.eventList.isEmpty)
                   const Center(
                     child: Text('불러오는 중...'),
                   )
@@ -197,7 +126,7 @@ class _EventScreenState extends State<EventScreen> {
                   StaggeredGrid.count(
                     crossAxisCount: 2,
                     mainAxisSpacing: 10.0,
-                    children: filteredEventList.map((event) {
+                    children: viewModel.filteredEventList.map((event) {
                       return CupertinoButton(
                         padding: const EdgeInsets.all(0.0),
                         child: EventCard(event: event),

@@ -6,7 +6,7 @@ import 'package:aws_common/vm.dart';
 class AmazonS3Util {
   static String eventPath = "event/";
 
-  Future<void> uploadImage(
+  static Future<void> uploadImage(
       {required File image, required String eventID}) async {
     final awsFile = AWSFilePlatform.fromFile(image);
     final String key = "$eventPath$eventID/poster.png";
