@@ -92,7 +92,27 @@ class FirestoreService {
     }
   }
 
-  // static final
+  Future<List<EventEntry>> getEventEntriesBy(String userID) async {
+    try {
+      QuerySnapshot querySnapshot = await entryRef
+          .where('userID', isEqualTo: userID) // userID 필드를 사용한 검색
+          .get();
+
+      List<EventEntry> eventEntries = querySnapshot.docs.map((doc) {
+        // Firestore 문서를 EventEntry 객체로 변환
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+        return EventEntry.fromJson(data);
+      }).toList();
+
+      return eventEntries;
+    } catch (e) {
+      // 오류 처리
+      print('오류 발생: $e');
+      return [];
+    }
+  }
+
+  // static finalenums
 
   // static Stream<QuerySnapshot<Map<String, dynamic>>> getStreamWith(
   //     String eventID) {

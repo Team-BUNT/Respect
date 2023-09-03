@@ -2,17 +2,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class EventEntry {
-  final String? eventID, paymentMethod, ticketOption;
+  final String? eventID, eventName, paymentMethod, ticketOption;
   final Timestamp? enrolledAt;
-  final String? id, name, dancerName, contact;
+  final String? id, userID, name, dancerName, contact;
   final bool? paymentStatus;
   final String? paymentID;
 
   EventEntry({
     required this.eventID,
+    required this.eventName,
     required this.ticketOption,
     required this.paymentMethod,
     required this.id,
+    required this.userID,
     required this.name,
     required this.dancerName,
     required this.contact,
@@ -23,7 +25,9 @@ class EventEntry {
 
   EventEntry.fromJson(Map<String, dynamic> json)
       : id = json['id'] as String?,
+        userID = json['userID'] as String?,
         eventID = json['eventID'] as String?,
+        eventName = json['eventName'] as String?,
         ticketOption = json['ticketOption'] as String?,
         paymentMethod = json['paymentMethod'] as String?,
         paymentID = json['paymentID'] as String?,
@@ -35,12 +39,14 @@ class EventEntry {
 
   Map<String, dynamic> toJson() => {
         'id': id,
+        'userID': userID,
         'name': name,
         'paymentMethod': paymentMethod,
         'paymentStatus': paymentStatus,
         'paymentID': paymentID,
         'ticketOption': ticketOption,
         'eventID': eventID,
+        'eventName': eventName,
         'dancerName': dancerName,
         'contact': contact,
         'enrolledAt': enrolledAt

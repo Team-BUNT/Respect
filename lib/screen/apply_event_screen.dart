@@ -1,7 +1,9 @@
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 import 'package:respect/components/apply_text_field.dart';
 import 'package:respect/components/checkbox_term_list_tile.dart';
 import 'package:respect/components/event_info_row.dart';
@@ -27,15 +29,19 @@ class _ApplyEventScreenState extends State<ApplyEventScreen> {
   bool agreePrivacy = false;
   bool agreePurchase = false;
 
+  //TODO - 사용자 데이터 연동 필요.
+
   void applyEvent() {
     final entryModel = EventEntry(
-      id: UniqueKey().hashCode.toString(),
+      id: const Uuid().v1(),
+      userID: "NEIS1234",
       enrolledAt: Timestamp.now(),
       eventID: widget.event.id,
-      ticketOption: widget.event.ticketOptions?.first.title,
+      eventName: widget.event.title,
+      ticketOption: selectedTicket?.title,
       paymentMethod: "접수",
-      name: "전주완",
-      dancerName: "WISE",
+      name: "정윤성",
+      dancerName: "NEIS",
       contact: "01024405830",
     );
 
@@ -116,6 +122,38 @@ class _ApplyEventScreenState extends State<ApplyEventScreen> {
                   EventInfoRow(
                     title: '시간',
                     content: DateFormat('HH:mm').format(widget.event.date!),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24.0),
+            const Divider(thickness: 2.0, color: Color(0xFFF4F4F4)),
+            const SizedBox(height: 24.0),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '참가자 정보',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                      fontFamily: 'Pretendard',
+                    ),
+                  ),
+                  SizedBox(height: 16.0),
+                  EventInfoRow(title: '이름', content: "정윤성"),
+                  SizedBox(height: 16.0),
+                  EventInfoRow(
+                    title: '댄서 네임',
+                    content: "NEIS",
+                  ),
+                  SizedBox(height: 16.0),
+                  EventInfoRow(
+                    title: '연락처',
+                    content: "010-2440-5830",
                   ),
                 ],
               ),
