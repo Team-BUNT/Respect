@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -6,7 +7,10 @@ import 'package:respect/components/checkbox_term_list_tile.dart';
 import 'package:respect/components/event_info_row.dart';
 import 'package:respect/constants.dart';
 import 'package:respect/model/event.dart';
+import 'package:respect/utils/firestore_services.dart';
 import 'package:respect/utils/formatter.dart';
+
+import '../model/event_entry.dart';
 
 class ApplyEventScreen extends StatefulWidget {
   const ApplyEventScreen({super.key, required this.event});
@@ -22,6 +26,21 @@ class _ApplyEventScreenState extends State<ApplyEventScreen> {
   TicketOption? selectedTicket;
   bool agreePrivacy = false;
   bool agreePurchase = false;
+
+  void applyEvent() {
+    final entryModel = EventEntry(
+      id: UniqueKey().hashCode.toString(),
+      enrolledAt: Timestamp.now(),
+      eventID: widget.event.id,
+      ticketOption: widget.event.ticketOptions?.first.title,
+      paymentMethod: "접수",
+      name: "전주완",
+      dancerName: "WISE",
+      contact: "01024405830",
+    );
+
+    FirestoreService.addEntry(entryModel);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -332,6 +351,7 @@ class _ApplyEventScreenState extends State<ApplyEventScreen> {
                 padding: const EdgeInsets.all(20.0),
                 onPressed: () {
                   //TODO - 접수하기 로직 구현
+                  applyEvent();
                   Navigator.pop(context);
                 },
                 child: const Text(
