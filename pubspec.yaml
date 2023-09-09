@@ -59,6 +59,7 @@ dependencies:
   googleapis:
   googleapis_auth:
   gsheets:
+  firebase_auth: ^4.9.0
 
 
 dev_dependencies:

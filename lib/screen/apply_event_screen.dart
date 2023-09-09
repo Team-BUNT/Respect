@@ -385,7 +385,7 @@ class _ApplyEventScreenState extends State<ApplyEventScreen> {
               ),
             ),
             const SizedBox(height: 54.0),
-            Padding(
+            Padding( 
               padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: CupertinoButton(
                 color: Colors.black,
@@ -393,6 +393,7 @@ class _ApplyEventScreenState extends State<ApplyEventScreen> {
                 onPressed: () {
                   //TODO - 접수하기 로직 구현
                   applyEvent();
+                  Navigator.pop(context);
                   Navigator.pop(context);
                 },
                 child: const Text(
