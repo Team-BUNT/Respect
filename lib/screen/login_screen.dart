@@ -10,10 +10,7 @@ import '../components/ht_text_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
-
   static String routeName = '/login';
-
-  // final Function() editCompletion;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -24,7 +21,6 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isSend = false;
   bool isValidVerficationCode = false;
   bool isEditable = false;
-
   String phoneNumber = "";
   String verificationCode = "";
   int minutes = 5;

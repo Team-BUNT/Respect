@@ -8,6 +8,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
+import 'package:respect/screen/login_screen.dart';
 import 'amplifyconfiguration.dart';
 import 'firebase_options.dart';
 import 'model/event.dart';
@@ -50,7 +51,7 @@ class RespectApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Respect',
-      initialRoute: EventScreen.routeName,
+      initialRoute: LoginScreen.routeName,
       routes: routes,
       onGenerateRoute: onGenerateRoute,
     );
