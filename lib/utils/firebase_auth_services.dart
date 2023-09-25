@@ -8,6 +8,8 @@ class FirebaseAuthHelper {
     await Firebase.initializeApp();
   }
 
+  static final FirebaseAuth auth = FirebaseAuth.instance;
+
   //MARK: - 회원가입 관련
 
   // 전화번호로 회원가입
@@ -46,23 +48,35 @@ class FirebaseAuthHelper {
     }
   }
 
-  static void signInWithPhoneNumberWithSmsCode(
-    String verificationId,
-    String smsCode,
-    Function(UserCredential) onSuccess,
-    // Function(FirebaseAuthException) onError,
-  ) async {
+  // 전화번호로 로그인
+  static Future<void> signInWithPhoneNumber({
+    required String phoneNumber,
+    required Function(User?) verificationCompleted,
+    required Function(FirebaseAuthException) verificationFailed,
+    required Function(String verificationId, int? resendToken) onCodeSent,
+    required Function(String verificationId) codeAutoRetrievalTimeout,
+  }) async {
     try {
-      PhoneAuthCredential credential = PhoneAuthProvider.credential(
-        verificationId: verificationId,
-        smsCode: smsCode,
+      await auth.verifyPhoneNumber(
+        timeout: const Duration(seconds: 300),
+        phoneNumber: phoneNumber,
+        verificationCompleted: (PhoneAuthCredential credential) async {
+          // MARK: - 안드로이드 ONLY
+          await auth.signInWithCredential(credential);
+          verificationCompleted(auth.currentUser);
+        },
+        verificationFailed: (FirebaseAuthException e) {
+          verificationFailed(e);
+        },
+        codeSent: (String verificationId, int? resendToken) {
+          onCodeSent(verificationId, resendToken);
+        },
+        codeAutoRetrievalTimeout: (String verificationId) {
+          codeAutoRetrievalTimeout(verificationId);
+        },
       );
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
-      onSuccess(userCredential);
     } catch (e) {
-      // onError(e);
-      debugPrint(e.toString());
+      print("Sign In With Phone Number Error: $e");
     }
   }
 

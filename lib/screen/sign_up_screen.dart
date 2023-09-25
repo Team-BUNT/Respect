@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +9,7 @@ import 'package:respect/constants.dart';
 import '../components/ht_button.dart';
 import '../components/ht_dialog.dart';
 import '../components/ht_text_field.dart';
+import '../utils/firebase_auth_services.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -19,21 +21,42 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController controller = TextEditingController();
+
+  //MARK: - 로그인 관련 데이터
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _smsCodeController = TextEditingController();
+  String verificationId = "";
+
+  //MARK: - UI 관련 데이터
+
   bool isSend = false;
   bool isValidVerficationCode = false;
   bool isEditable = false;
-  String phoneNumber = "";
-  String verificationCode = "";
   int minutes = 5;
   int seconds = 00;
   late Timer timer;
-
-  Timer? _debounce;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     //TODO - 전화번호 자동 입력
+  }
+
+  void onSignInSuccess(User? user) {
+    // 로그인 성공 시 처리
+    if (user != null) {
+      print("로그인 성공: ${user.phoneNumber}");
+    }
+  }
+
+  void onSignInFailed(FirebaseAuthException e) {
+    // 로그인 실패 시 처리
+    print("로그인 실패: ${e.message}");
+  }
+
+  void onCodeSent(String verificationId, int? resendToken) {
+    // 코드가 전송되었을 때 처리
+    this.verificationId = verificationId;
   }
 
   @override
@@ -63,11 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Expanded(
                     flex: 200,
                     child: HTTextField(
-                      controller: TextEditingController.fromValue(
-                          TextEditingValue(
-                              text: phoneNumber,
-                              selection: TextSelection.collapsed(
-                                  offset: phoneNumber.length))),
+                      controller: _phoneController,
                       hintText: "010-0000-0000",
                       inputFormatters: [
                         PhoneNumberInputFormatter(),
@@ -94,17 +113,46 @@ class _LoginScreenState extends State<LoginScreen> {
                         strokeColor: Colors.black,
                         backgroundColor: isSend ? Colors.white : Colors.black,
                         onPressed: () {
-                          // TODO - 인증번호 발송 기능
+                          String cleanPhoneNumber =
+                              _phoneController.text.replaceAll('-', '');
+                          if (cleanPhoneNumber.startsWith("0")) {
+                            cleanPhoneNumber = cleanPhoneNumber.substring(1);
+                          }
+                          cleanPhoneNumber = "+82$cleanPhoneNumber";
 
-                          const dialog = HTDialog(
-                            message: "인증번호가 전송되었습니다.",
-                            primaryLabel: "확인",
+                          FirebaseAuthHelper.signInWithPhoneNumber(
+                            phoneNumber: cleanPhoneNumber,
+                            verificationCompleted: (user) async {
+                              // 안드로이드 Only -> 로그인 성공 처리
+                              debugPrint("Android auto verificationCompleted");
+                              Navigator.pushNamed(context, "/");
+                            },
+                            verificationFailed: (firebaseAuthException) {
+                              switch (firebaseAuthException.code) {
+                                case "invalid-phone-number":
+                                  debugPrint("전화번호가 올바르지 않습니다.");
+                              }
+                              debugPrint("verificationFailed");
+                            },
+                            onCodeSent:
+                                (String verificationId, int? resendToken) {
+                              setState(() {
+                                isSend = true;
+                                this.verificationId = verificationId;
+                                startTimer();
+                              });
+
+                              const dialog = HTDialog(
+                                message: "인증번호가 전송되었습니다.",
+                                primaryLabel: "확인",
+                              );
+                              showAlertDialog(context, dialog: dialog);
+                            },
+                            codeAutoRetrievalTimeout: (String verificationId) {
+                              //TODO - 타임아웃 핸들링
+                              debugPrint("verificationCompleted");
+                            },
                           );
-                          showAlertDialog(context, dialog: dialog);
-                          setState(() {
-                            isSend = true;
-                            startTimer();
-                          });
                         },
                       ),
                     ),
@@ -122,15 +170,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: HTTextField(
                         hintText: "인증번호",
                         keyboardType: TextInputType.number,
-
+                        controller: _smsCodeController,
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly
                         ],
-                        // error: !isValidVerficationCode,
-                        // errorText: "*인증번호가 일치하지 않습니다.",
-
-                        // onChanged: (newValue) =>
-                        //     _onNumberChanged(newValue, user?.email ?? ""),
+                        onChanged: (p0) {
+                          debugPrint(p0);
+                        },
                         onSubmitted: (p0) {
                           debugPrint("submitted - $p0");
                         },
@@ -175,7 +221,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 title: "완료",
                 titleColor: isSend ? Colors.white : const Color(0xFF555555),
                 backgroundColor: Colors.black,
-                onPressed: (!isSend) ? null : handleEditButtonTap,
+                onPressed: (!isSend) ? null : didLoginButtonPress,
               ),
             ],
           ),
@@ -184,25 +230,17 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  void didVerficationCodeSendButtonPressed() {
-    setState(() {
-      isSend = false;
-    });
+  void didLoginButtonPress() async {
+    //TODO - 로그인 예외 처리
+    FirebaseAuth auth = FirebaseAuthHelper.auth;
 
-    String cleanedPhoneNumber = phoneNumber.replaceAll('-', '');
+    PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: verificationId, smsCode: _smsCodeController.text);
 
-    const dialog = HTDialog(
-      message: "인증번호가 전송되었습니다.",
-      primaryLabel: "확인",
-    );
-    showAlertDialog(context, dialog: dialog);
-    startTimer();
-    setState(() {
-      isSend = true;
-    });
+    await auth
+        .signInWithCredential(credential)
+        .then((_) => Navigator.pushNamed(context, "/"));
   }
-
-  void handleEditButtonTap() {}
 
   void showAlertDialog(BuildContext context, {required HTDialog dialog}) {
     showDialog(
@@ -254,7 +292,7 @@ class _LoginScreenState extends State<LoginScreen> {
     }
 
     setState(() {
-      phoneNumber = newText;
+      // _phoneController.text = newText;
     });
 
     return TextEditingValue(
