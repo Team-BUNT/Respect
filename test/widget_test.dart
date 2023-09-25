@@ -13,24 +13,22 @@ import 'package:respect/main.dart';
 import 'package:respect/utils/firebase_auth_services.dart';
 
 void main() async {
- 
+  // test("description", () {
+  //   Firebase.initializeApp();
+  //   FirebaseAuthHelper.initializeFirebase();
 
-  test("description", () {
-    Firebase.initializeApp();
-    FirebaseAuthHelper.initializeFirebase();
-
-    FirebaseAuthHelper.signUpWithPhoneNumber(
-      phoneNumber: "01024405830",
-      onVerificationCompleted: (userId) {},
-      onCodeSent: (verificationId) {
-        debugPrint(verificationId);
-      },
-      onVerificationFailed: (error) {
-        debugPrint(error.message);
-      },
-      onCodeAutoRetrievalTimeout: (error) {
-        debugPrint(error.characters.string);
-      },
-    );
-  });
+  //   FirebaseAuthHelper.signUpWithPhoneNumber(
+  //     phoneNumber: "01024405830",
+  //     onVerificationCompleted: (userId) {},
+  //     onCodeSent: (verificationId) {
+  //       debugPrint(verificationId);
+  //     },
+  //     onVerificationFailed: (error) {
+  //       debugPrint(error.message);
+  //     },
+  //     onCodeAutoRetrievalTimeout: (error) {
+  //       debugPrint(error.characters.string);
+  //     },
+  //   );
+  // });
 }

@@ -13,7 +13,7 @@ import '../utils/firebase_auth_services.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
-  static String routeName = '/login';
+  static String routeName = '/signin';
 
   @override
   State<SignInScreen> createState() => _SignInScreenState();
@@ -28,7 +28,6 @@ class _SignInScreenState extends State<SignInScreen> {
   String verificationId = "";
 
   //MARK: - UI 관련 데이터
-
   bool isSend = false;
   bool isValidVerficationCode = false;
   bool isEditable = false;
@@ -40,23 +39,6 @@ class _SignInScreenState extends State<SignInScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     //TODO - 전화번호 자동 입력
-  }
-
-  void onSignInSuccess(User? user) {
-    // 로그인 성공 시 처리
-    if (user != null) {
-      print("로그인 성공: ${user.phoneNumber}");
-    }
-  }
-
-  void onSignInFailed(FirebaseAuthException e) {
-    // 로그인 실패 시 처리
-    print("로그인 실패: ${e.message}");
-  }
-
-  void onCodeSent(String verificationId, int? resendToken) {
-    // 코드가 전송되었을 때 처리
-    this.verificationId = verificationId;
   }
 
   @override
@@ -97,7 +79,6 @@ class _SignInScreenState extends State<SignInScreen> {
                       onChanged: (newValue) {
                         setState(() {
                           isSend = false;
-                          startTimer();
                         });
                       },
                     ),
@@ -231,16 +212,44 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void didLoginButtonPress() async {
-    //TODO - 로그인 예외 처리
     FirebaseAuth auth = FirebaseAuthHelper.auth;
-
     PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: verificationId, smsCode: _smsCodeController.text);
 
-    await auth
-        .signInWithCredential(credential)
-        .then((_) => Navigator.pushNamed(context, "/"));
+    try {
+      await auth.signInWithCredential(credential).then(
+        (userCredential) {
+          if (userCredential.additionalUserInfo?.isNewUser ?? true) {
+            //TODO - 추가 정보 입력 화면 이동!!
+            debugPrint("new User sign Up");
+            Navigator.pushNamed(context, "/");
+          } else {
+            Navigator.pushNamed(context, "/");
+            debugPrint("old User sign Up");
+          }
+        },
+      );
+    } on FirebaseAuthException catch (error) {
+      print(error.code);
+      switch (error.code) {
+        case "invalid-verification-code":
+          const dialog = HTDialog(
+            message: "인증번호가 일치하지 않습니다.",
+            primaryLabel: "확인",
+          );
+          showAlertDialog(context, dialog: dialog);
+      }
+    }
   }
+
+  // if (userCredential.user == null) {
+  //     const dialog = HTDialog(
+  //       message: "인증번호가 일치하지 않습니다.",
+  //       primaryLabel: "확인",
+  //     );
+  //     showAlertDialog(context, dialog: dialog);
+  //     return;
+  //   }
 
   void showAlertDialog(BuildContext context, {required HTDialog dialog}) {
     showDialog(

@@ -15,10 +15,10 @@ class FirebaseAuthHelper {
   // 전화번호로 회원가입
   static void signUpWithPhoneNumber({
     required String phoneNumber,
-    required void Function(String userId)? onVerificationCompleted,
-    required void Function(String verificationId)? onCodeSent,
-    required void Function(FirebaseAuthException error)? onVerificationFailed,
-    required void Function(String error)? onCodeAutoRetrievalTimeout,
+    required void Function(String userId)? verificationCompleted,
+    required void Function(String verificationId, int? resendToken)? onCodeSent,
+    required void Function(FirebaseAuthException error)? verificationFailed,
+    required void Function(String error)? codeAutoRetrievalTimeout,
   }) {
     try {
       FirebaseAuth.instance.verifyPhoneNumber(
@@ -27,18 +27,18 @@ class FirebaseAuthHelper {
           // Android 환경에서만 호출됨!! SMS 코드 신경쓸 필요없이 자동으로 로그인
           UserCredential userCredential =
               await FirebaseAuth.instance.signInWithCredential(credential);
-          onVerificationCompleted?.call(userCredential.user!.uid);
+          verificationCompleted?.call(userCredential.user!.uid);
         },
         verificationFailed: (FirebaseAuthException e) {
-          onVerificationFailed?.call(e);
+          verificationFailed?.call(e);
         },
         codeSent: (String verificationId, int? resendToken) {
-          onCodeSent?.call(verificationId);
+          onCodeSent?.call(verificationId, resendToken);
           // UI - 인증코드를 입력하는 화면을 보여주는 코드
           // Update the UI - 사용자가 코드를 입력할 때까지 기다려야함.
         },
         codeAutoRetrievalTimeout: (String verificationId) {
-          onCodeAutoRetrievalTimeout?.call(verificationId);
+          codeAutoRetrievalTimeout?.call(verificationId);
         },
       );
     } catch (e) {
