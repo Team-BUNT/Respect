@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:respect/constants.dart';
 
 import '../components/ht_button.dart';
 import '../components/ht_dialog.dart';
@@ -39,16 +40,13 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("연락처"),
-        leading: CupertinoButton(
-          padding: EdgeInsets.zero,
-          child: Image.asset(
-            'assets/icons/back_button.png',
-            width: 20.0,
-            height: 20.0,
-          ),
-          onPressed: () => Navigator.pop(context),
+        title: Text(
+          "로그인",
+          style: navTextStyle,
         ),
+        foregroundColor: Colors.black,
+        backgroundColor: Colors.white,
+        elevation: 0.1,
       ),
       body: SafeArea(
         child: Padding(
@@ -57,6 +55,17 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const SizedBox(height: 32),
+              const Text(
+                '안녕하세요! 🪩 \n다시 만나 반갑습니다.',
+                style: TextStyle(
+                  color: Color(0xFF1E232C),
+                  fontSize: 30,
+                  fontWeight: FontWeight.w900,
+                  height: 1.3,
+                ),
+              ),
+              const SizedBox(height: 32),
               Row(
                 children: [
                   Expanded(
@@ -77,6 +86,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onChanged: (newValue) {
                         setState(() {
                           isSend = false;
+                          startTimer();
                         });
                       },
                     ),
@@ -93,6 +103,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         backgroundColor: isSend ? Colors.white : Colors.black,
                         onPressed: () {
                           // TODO - 인증번호 발송 기능
+
+                          const dialog = HTDialog(
+                            message: "인증번호가 전송되었습니다.",
+                            primaryLabel: "확인",
+                          );
+                          showAlertDialog(context, dialog: dialog);
+                          setState(() {
+                            isSend = true;
+                            startTimer();
+                          });
                         },
                       ),
                     ),
@@ -110,13 +130,18 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: HTTextField(
                         hintText: "인증번호",
                         keyboardType: TextInputType.number,
+
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly
                         ],
-                        error: !isValidVerficationCode,
-                        errorText: "*인증번호가 일치하지 않습니다.",
+                        // error: !isValidVerficationCode,
+                        // errorText: "*인증번호가 일치하지 않습니다.",
+
                         // onChanged: (newValue) =>
                         //     _onNumberChanged(newValue, user?.email ?? ""),
+                        onSubmitted: (p0) {
+                          debugPrint("submitted - $p0");
+                        },
                         suffixIcon: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -133,30 +158,32 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    Expanded(
-                      flex: 130,
-                      child: SizedBox(
-                        height: 48,
-                        child: HTButton(
-                          title: "인증번호 확인",
-                          titleColor: Colors.white,
-                          backgroundColor: Colors.black,
-                          onPressed: () {
-                            //TODO - 인증번호 확인 기능
-                          },
-                        ),
-                      ),
-                    ),
+                    // const SizedBox(width: 12),
+                    // Expanded(
+                    //   flex: 130,
+                    //   child: SizedBox(
+                    //     height: 48,
+                    //     child: HTButton(
+                    //       title: "인증번호 확인",
+                    //       titleColor: Colors.white,
+                    //       backgroundColor: Colors.black,
+                    //       onPressed: () {
+                    //         //TODO - 인증번호 확인 기능
+                    //         setState(() {
+                    //           isValidVerficationCode = true;
+                    //         });
+                    //       },
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               const Spacer(),
               HTButton(
-                title: "변경",
+                title: "완료",
                 titleColor: isSend ? Colors.white : const Color(0xFF555555),
                 backgroundColor: Colors.black,
-                onPressed: (!isSend || !isValidVerficationCode)
-                    ? null
-                    : handleEditButtonTap,
+                onPressed: (!isSend) ? null : handleEditButtonTap,
               ),
             ],
           ),

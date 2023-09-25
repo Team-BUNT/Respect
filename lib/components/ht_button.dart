@@ -45,8 +45,8 @@ class HTButton extends StatelessWidget {
             if (isLoading == null || isLoading == false)
               Text(
                 title,
-                // style: Constants.defaultTextStyle
-                //     .copyWith(color: titleColor ?? Colors.black, height: 1.0),
+                style: Constants.regularNormalTextStyle
+                    .copyWith(color: titleColor),
               )
             else
               const SizedBox(

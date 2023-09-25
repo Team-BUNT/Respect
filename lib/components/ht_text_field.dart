@@ -22,6 +22,7 @@ class HTTextField extends StatelessWidget {
     this.errorText,
     this.textAlignVertical,
     this.obscureText = false,
+    this.onSubmitted,
   });
   final TextEditingController? controller;
   final String? hintText;
@@ -31,6 +32,7 @@ class HTTextField extends StatelessWidget {
   final Widget? suffix;
   final Clip clipBehavior;
   final Function(String)? onChanged;
+  final Function(String)? onSubmitted;
   final List<TextInputFormatter>? inputFormatters;
   final int? maxLines;
   final bool expands;
@@ -54,6 +56,7 @@ class HTTextField extends StatelessWidget {
       inputFormatters: inputFormatters,
       obscureText: obscureText,
       onChanged: onChanged,
+      onSubmitted: onSubmitted,
       clipBehavior: clipBehavior,
       style: const TextStyle(
         color: Colors.black,
