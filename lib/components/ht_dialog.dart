@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:respect/constants.dart';
 
 class HTDialog extends StatelessWidget {
   const HTDialog({
@@ -42,6 +43,7 @@ class HTDialog extends StatelessWidget {
         child: Center(
           child: Text(
             label,
+            style: Constants.regularNormalTextStyle,
           ),
         ),
       ),
@@ -73,14 +75,14 @@ class HTDialog extends StatelessWidget {
                 children: [
                   Text(
                     message,
-                    // style: Constants.defaultTextStyle,
+                    style: Constants.regularNormalTextStyle,
                     textAlign: TextAlign.center,
                   ),
                   if (subMessage != null) const SizedBox(height: 8.0),
                   if (subMessage != null)
                     Text(
                       subMessage!,
-                      // style: Constants.textFieldErrorStyle,
+                      style: Constants.regularBoldTextStyle,
                       textAlign: TextAlign.center,
                     ),
                 ],

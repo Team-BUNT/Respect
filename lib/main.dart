@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk_share/kakao_flutter_sdk_share.dart';
+import 'package:respect/app_theme.dart';
 import 'package:respect/routing_constants.dart';
 import 'package:respect/screen/apply_event_screen.dart';
 import 'package:respect/screen/event_detail_screen.dart';
@@ -50,6 +51,7 @@ class RespectApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme(),
       title: 'Respect',
       initialRoute: LoginScreen.routeName,
       routes: routes,

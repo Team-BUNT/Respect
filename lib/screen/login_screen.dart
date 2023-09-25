@@ -39,15 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "로그인",
-          style: navTextStyle,
-        ),
-        foregroundColor: Colors.black,
-        backgroundColor: Colors.white,
-        elevation: 0.1,
-      ),
+      appBar: AppBar(title: const Text("로그인")),
       body: SafeArea(
         child: Padding(
           padding:
@@ -266,10 +258,10 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     return TextEditingValue(
-        text: newText,
-        selection: TextSelection(
-            baseOffset: newValue.text.length,
-            extentOffset: newValue.text.length));
+      text: newText,
+      selection: TextSelection(
+          baseOffset: newValue.text.length, extentOffset: newValue.text.length),
+    );
   }
 }
 
