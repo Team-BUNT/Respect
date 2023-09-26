@@ -41,6 +41,12 @@ class _SignInScreenState extends State<SignInScreen> {
     //TODO - 전화번호 자동 입력
   }
 
+// TextStyle(
+//                   color: Color(0xFF1E232C),
+//                   fontSize: 30,
+//                   fontWeight: FontWeight.w900,
+//                   height: 1.3,
+//                 ),
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -53,15 +59,9 @@ class _SignInScreenState extends State<SignInScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 32),
-              const Text(
-                '안녕하세요! 🪩 \n다시 만나 반갑습니다.',
-                style: TextStyle(
-                  color: Color(0xFF1E232C),
-                  fontSize: 30,
-                  fontWeight: FontWeight.w900,
-                  height: 1.3,
-                ),
-              ),
+              Text('안녕하세요! 🪩 \n다시 만나 반갑습니다.',
+                  style: Constants.title2TextStyle
+                      .copyWith(fontWeight: FontWeight.w900)),
               const SizedBox(height: 32),
               Row(
                 children: [
@@ -212,25 +212,23 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void didLoginButtonPress() async {
-    FirebaseAuth auth = FirebaseAuthHelper.auth;
     PhoneAuthCredential credential = PhoneAuthProvider.credential(
         verificationId: verificationId, smsCode: _smsCodeController.text);
-
     try {
-      await auth.signInWithCredential(credential).then(
+      await FirebaseAuthHelper.auth.signInWithCredential(credential).then(
         (userCredential) {
           if (userCredential.additionalUserInfo?.isNewUser ?? true) {
             //TODO - 추가 정보 입력 화면 이동!!
-            debugPrint("new User sign Up");
+            debugPrint("signInWithCredential - new User sign Up");
             Navigator.pushNamed(context, "/");
           } else {
             Navigator.pushNamed(context, "/");
-            debugPrint("old User sign Up");
+            debugPrint("signInWithCredential - old User sign Up");
           }
         },
       );
     } on FirebaseAuthException catch (error) {
-      print(error.code);
+      debugPrint("FirebaseAuthException - ${error.code}");
       switch (error.code) {
         case "invalid-verification-code":
           const dialog = HTDialog(
