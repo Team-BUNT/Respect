@@ -14,6 +14,8 @@
 	<string>1</string>
 	<key>BUNDLE_ID</key>
 	<string>com.jio.RESPECT</string>
+	<key>CFBundleDisplayName</key>
+    <string>HTYETOWN</string>
 	<key>PROJECT_ID</key>
 	<string>respect-1f4e0</string>
 	<key>STORAGE_BUCKET</key>
