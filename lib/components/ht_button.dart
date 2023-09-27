@@ -26,10 +26,10 @@ class HTButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 48.0,
+      height: 52.0,
       decoration: ShapeDecoration(
           shape: RoundedRectangleBorder(
-        side: BorderSide(color: strokeColor ?? Colors.transparent, width: 0.5),
+        side: BorderSide(color: strokeColor ?? Colors.transparent, width: 1.5),
         borderRadius: BorderRadius.circular(12.0),
       )),
       child: CupertinoButton(
@@ -45,8 +45,8 @@ class HTButton extends StatelessWidget {
             if (isLoading == null || isLoading == false)
               Text(
                 title,
-                style: Constants.regularNormalTextStyle
-                    .copyWith(color: titleColor),
+                style: Constants.regularBoldTextStyle
+                    .copyWith(color: titleColor, fontWeight: FontWeight.w600),
               )
             else
               const SizedBox(

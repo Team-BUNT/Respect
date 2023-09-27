@@ -33,7 +33,7 @@ class _SignInScreenState extends State<SignInScreen> {
   bool isEditable = false;
   int minutes = 5;
   int seconds = 00;
-  late Timer timer;
+  Timer? timer;
 
   @override
   void didChangeDependencies() {
@@ -281,7 +281,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
   @override
   void dispose() {
-    timer.cancel();
+    timer?.cancel();
     super.dispose();
   }
 

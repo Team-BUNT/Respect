@@ -105,16 +105,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     return Stack(
       children: [
         Scaffold(
-          appBar: AppBar(
-            title: Text(
-              '행사정보',
-              style: navTextStyle,
-            ),
-            foregroundColor: Colors.black,
-            backgroundColor: Colors.white,
-            elevation: 0.1,
-          ),
-          backgroundColor: Colors.white,
+          appBar: AppBar(title: const Text('행사정보')),
           body: Stack(
             children: [
               SingleChildScrollView(
